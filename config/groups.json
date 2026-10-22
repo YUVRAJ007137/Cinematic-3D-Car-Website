@@ -1,0 +1,1942 @@
+{
+  "chassis.002": {
+    "group": "mechanical",
+    "confidence": "high",
+    "reason": "mechanical name"
+  },
+  "chassis002": {
+    "group": "mechanical",
+    "confidence": "high",
+    "reason": "mechanical name"
+  },
+  "Object045.001": {
+    "group": "body_panels",
+    "confidence": "high",
+    "reason": "automotive paint material"
+  },
+  "Object045001": {
+    "group": "body_panels",
+    "confidence": "high",
+    "reason": "automotive paint material"
+  },
+  "Cylinder004.001": {
+    "group": "body_panels",
+    "confidence": "high",
+    "reason": "automotive paint material"
+  },
+  "Cylinder004001": {
+    "group": "body_panels",
+    "confidence": "high",
+    "reason": "automotive paint material"
+  },
+  "Torus001.001": {
+    "group": "body_panels",
+    "confidence": "high",
+    "reason": "automotive paint material"
+  },
+  "Torus001001": {
+    "group": "body_panels",
+    "confidence": "high",
+    "reason": "automotive paint material"
+  },
+  "Plane005.002": {
+    "group": "body_panels",
+    "confidence": "high",
+    "reason": "automotive paint material"
+  },
+  "Plane005002": {
+    "group": "body_panels",
+    "confidence": "high",
+    "reason": "automotive paint material"
+  },
+  "Object016.002": {
+    "group": "body_panels",
+    "confidence": "high",
+    "reason": "automotive paint material"
+  },
+  "Object016002": {
+    "group": "body_panels",
+    "confidence": "high",
+    "reason": "automotive paint material"
+  },
+  "Plane001.003": {
+    "group": "body_panels",
+    "confidence": "high",
+    "reason": "automotive paint material"
+  },
+  "Plane001003": {
+    "group": "body_panels",
+    "confidence": "high",
+    "reason": "automotive paint material"
+  },
+  "Plane002.002": {
+    "group": "body_panels",
+    "confidence": "high",
+    "reason": "automotive paint material"
+  },
+  "Plane002002": {
+    "group": "body_panels",
+    "confidence": "high",
+    "reason": "automotive paint material"
+  },
+  "Plane003.001": {
+    "group": "body_panels",
+    "confidence": "high",
+    "reason": "automotive paint material"
+  },
+  "Plane003001": {
+    "group": "body_panels",
+    "confidence": "high",
+    "reason": "automotive paint material"
+  },
+  "Box001.002": {
+    "group": "body_panels",
+    "confidence": "high",
+    "reason": "automotive paint material"
+  },
+  "Box001002": {
+    "group": "body_panels",
+    "confidence": "high",
+    "reason": "automotive paint material"
+  },
+  "Box002.003": {
+    "group": "body_panels",
+    "confidence": "high",
+    "reason": "automotive paint material"
+  },
+  "Box002003": {
+    "group": "body_panels",
+    "confidence": "high",
+    "reason": "automotive paint material"
+  },
+  "Box024.001": {
+    "group": "body_panels",
+    "confidence": "high",
+    "reason": "automotive paint material"
+  },
+  "Box024001": {
+    "group": "body_panels",
+    "confidence": "high",
+    "reason": "automotive paint material"
+  },
+  "Box025.001": {
+    "group": "body_panels",
+    "confidence": "high",
+    "reason": "automotive paint material"
+  },
+  "Box025001": {
+    "group": "body_panels",
+    "confidence": "high",
+    "reason": "automotive paint material"
+  },
+  "GAPFILL001.001": {
+    "group": "mechanical",
+    "confidence": "high",
+    "reason": "mechanical name"
+  },
+  "GAPFILL001001": {
+    "group": "mechanical",
+    "confidence": "high",
+    "reason": "mechanical name"
+  },
+  "Plane011.001": {
+    "group": "body_panels",
+    "confidence": "high",
+    "reason": "automotive paint material"
+  },
+  "Plane011001": {
+    "group": "body_panels",
+    "confidence": "high",
+    "reason": "automotive paint material"
+  },
+  "Plane012.001": {
+    "group": "body_panels",
+    "confidence": "high",
+    "reason": "automotive paint material"
+  },
+  "Plane012001": {
+    "group": "body_panels",
+    "confidence": "high",
+    "reason": "automotive paint material"
+  },
+  "Box034.001": {
+    "group": "body_panels",
+    "confidence": "high",
+    "reason": "automotive paint material"
+  },
+  "Box034001": {
+    "group": "body_panels",
+    "confidence": "high",
+    "reason": "automotive paint material"
+  },
+  "Box035.001": {
+    "group": "body_panels",
+    "confidence": "low",
+    "reason": "heuristic: large outer dimension"
+  },
+  "Box035001": {
+    "group": "body_panels",
+    "confidence": "low",
+    "reason": "heuristic: large outer dimension"
+  },
+  "Box036.001": {
+    "group": "body_panels",
+    "confidence": "low",
+    "reason": "heuristic: large outer dimension"
+  },
+  "Box036001": {
+    "group": "body_panels",
+    "confidence": "low",
+    "reason": "heuristic: large outer dimension"
+  },
+  "Object034.002": {
+    "group": "body_panels",
+    "confidence": "high",
+    "reason": "automotive paint material"
+  },
+  "Object034002": {
+    "group": "body_panels",
+    "confidence": "high",
+    "reason": "automotive paint material"
+  },
+  "Box040.001": {
+    "group": "interior",
+    "confidence": "low",
+    "reason": "heuristic: inside cabin volume"
+  },
+  "Box040001": {
+    "group": "interior",
+    "confidence": "low",
+    "reason": "heuristic: inside cabin volume"
+  },
+  "Box039.001": {
+    "group": "interior",
+    "confidence": "low",
+    "reason": "heuristic: inside cabin volume"
+  },
+  "Box039001": {
+    "group": "interior",
+    "confidence": "low",
+    "reason": "heuristic: inside cabin volume"
+  },
+  "Box043.001": {
+    "group": "body_panels",
+    "confidence": "low",
+    "reason": "heuristic: large outer dimension"
+  },
+  "Box043001": {
+    "group": "body_panels",
+    "confidence": "low",
+    "reason": "heuristic: large outer dimension"
+  },
+  "Box042.001": {
+    "group": "misc",
+    "confidence": "low",
+    "reason": "anonymous mesh with no strong spatial match"
+  },
+  "Box042001": {
+    "group": "misc",
+    "confidence": "low",
+    "reason": "anonymous mesh with no strong spatial match"
+  },
+  "Box041.001": {
+    "group": "misc",
+    "confidence": "low",
+    "reason": "anonymous mesh with no strong spatial match"
+  },
+  "Box041001": {
+    "group": "misc",
+    "confidence": "low",
+    "reason": "anonymous mesh with no strong spatial match"
+  },
+  "cooler.001": {
+    "group": "mechanical",
+    "confidence": "high",
+    "reason": "mechanical name"
+  },
+  "cooler001": {
+    "group": "mechanical",
+    "confidence": "high",
+    "reason": "mechanical name"
+  },
+  "Box044.001": {
+    "group": "body_panels",
+    "confidence": "high",
+    "reason": "automotive paint material"
+  },
+  "Box044001": {
+    "group": "body_panels",
+    "confidence": "high",
+    "reason": "automotive paint material"
+  },
+  "Box051.001": {
+    "group": "misc",
+    "confidence": "low",
+    "reason": "anonymous mesh with no strong spatial match"
+  },
+  "Box051001": {
+    "group": "misc",
+    "confidence": "low",
+    "reason": "anonymous mesh with no strong spatial match"
+  },
+  "bugatti_logo.001": {
+    "group": "body_panels",
+    "confidence": "high",
+    "reason": "manufacturer emblem on body"
+  },
+  "bugatti_logo001": {
+    "group": "body_panels",
+    "confidence": "high",
+    "reason": "manufacturer emblem on body"
+  },
+  "Line006.001": {
+    "group": "mechanical",
+    "confidence": "low",
+    "reason": "heuristic: undercarriage metal/structure"
+  },
+  "Line006001": {
+    "group": "mechanical",
+    "confidence": "low",
+    "reason": "heuristic: undercarriage metal/structure"
+  },
+  "int004.001": {
+    "group": "interior",
+    "confidence": "high",
+    "reason": "interior name or upholstery material"
+  },
+  "int004001": {
+    "group": "interior",
+    "confidence": "high",
+    "reason": "interior name or upholstery material"
+  },
+  "Box011.003": {
+    "group": "misc",
+    "confidence": "low",
+    "reason": "anonymous mesh with no strong spatial match"
+  },
+  "Box011003": {
+    "group": "misc",
+    "confidence": "low",
+    "reason": "anonymous mesh with no strong spatial match"
+  },
+  "Box012.002": {
+    "group": "misc",
+    "confidence": "low",
+    "reason": "anonymous mesh with no strong spatial match"
+  },
+  "Box012002": {
+    "group": "misc",
+    "confidence": "low",
+    "reason": "anonymous mesh with no strong spatial match"
+  },
+  "CHROME_REFLECTOR.001": {
+    "group": "glass_and_lights",
+    "confidence": "high",
+    "reason": "glass or lighting name/material"
+  },
+  "CHROME_REFLECTOR001": {
+    "group": "glass_and_lights",
+    "confidence": "high",
+    "reason": "glass or lighting name/material"
+  },
+  "Plane007.001": {
+    "group": "misc",
+    "confidence": "low",
+    "reason": "anonymous mesh with no strong spatial match"
+  },
+  "Plane007001": {
+    "group": "misc",
+    "confidence": "low",
+    "reason": "anonymous mesh with no strong spatial match"
+  },
+  "Object019.002": {
+    "group": "misc",
+    "confidence": "low",
+    "reason": "anonymous mesh with no strong spatial match"
+  },
+  "Object019002": {
+    "group": "misc",
+    "confidence": "low",
+    "reason": "anonymous mesh with no strong spatial match"
+  },
+  "Cylinder001.003": {
+    "group": "misc",
+    "confidence": "low",
+    "reason": "anonymous mesh with no strong spatial match"
+  },
+  "Cylinder001003": {
+    "group": "misc",
+    "confidence": "low",
+    "reason": "anonymous mesh with no strong spatial match"
+  },
+  "LIGHT_GLOW.001": {
+    "group": "glass_and_lights",
+    "confidence": "high",
+    "reason": "glass or lighting name/material"
+  },
+  "LIGHT_GLOW001": {
+    "group": "glass_and_lights",
+    "confidence": "high",
+    "reason": "glass or lighting name/material"
+  },
+  "Plane006.001": {
+    "group": "glass_and_lights",
+    "confidence": "high",
+    "reason": "glass or lighting name/material"
+  },
+  "Plane006001": {
+    "group": "glass_and_lights",
+    "confidence": "high",
+    "reason": "glass or lighting name/material"
+  },
+  "Box013.002": {
+    "group": "misc",
+    "confidence": "low",
+    "reason": "anonymous mesh with no strong spatial match"
+  },
+  "Box013002": {
+    "group": "misc",
+    "confidence": "low",
+    "reason": "anonymous mesh with no strong spatial match"
+  },
+  "Box014.002": {
+    "group": "misc",
+    "confidence": "low",
+    "reason": "anonymous mesh with no strong spatial match"
+  },
+  "Box014002": {
+    "group": "misc",
+    "confidence": "low",
+    "reason": "anonymous mesh with no strong spatial match"
+  },
+  "CHROME_REFLECTOR001.001": {
+    "group": "glass_and_lights",
+    "confidence": "high",
+    "reason": "glass or lighting name/material"
+  },
+  "CHROME_REFLECTOR001001": {
+    "group": "glass_and_lights",
+    "confidence": "high",
+    "reason": "glass or lighting name/material"
+  },
+  "Cylinder002.002": {
+    "group": "misc",
+    "confidence": "low",
+    "reason": "anonymous mesh with no strong spatial match"
+  },
+  "Cylinder002002": {
+    "group": "misc",
+    "confidence": "low",
+    "reason": "anonymous mesh with no strong spatial match"
+  },
+  "LIGHT_GLOW001.001": {
+    "group": "glass_and_lights",
+    "confidence": "high",
+    "reason": "glass or lighting name/material"
+  },
+  "LIGHT_GLOW001001": {
+    "group": "glass_and_lights",
+    "confidence": "high",
+    "reason": "glass or lighting name/material"
+  },
+  "Object020.002": {
+    "group": "misc",
+    "confidence": "low",
+    "reason": "anonymous mesh with no strong spatial match"
+  },
+  "Object020002": {
+    "group": "misc",
+    "confidence": "low",
+    "reason": "anonymous mesh with no strong spatial match"
+  },
+  "Plane008.001": {
+    "group": "glass_and_lights",
+    "confidence": "high",
+    "reason": "glass or lighting name/material"
+  },
+  "Plane008001": {
+    "group": "glass_and_lights",
+    "confidence": "high",
+    "reason": "glass or lighting name/material"
+  },
+  "Plane009.001": {
+    "group": "misc",
+    "confidence": "low",
+    "reason": "anonymous mesh with no strong spatial match"
+  },
+  "Plane009001": {
+    "group": "misc",
+    "confidence": "low",
+    "reason": "anonymous mesh with no strong spatial match"
+  },
+  "Box006.003": {
+    "group": "glass_and_lights",
+    "confidence": "high",
+    "reason": "glass or lighting name/material"
+  },
+  "Box006003": {
+    "group": "glass_and_lights",
+    "confidence": "high",
+    "reason": "glass or lighting name/material"
+  },
+  "Object037.002": {
+    "group": "body_panels",
+    "confidence": "high",
+    "reason": "automotive paint material"
+  },
+  "Object037002": {
+    "group": "body_panels",
+    "confidence": "high",
+    "reason": "automotive paint material"
+  },
+  "Box048.001": {
+    "group": "body_panels",
+    "confidence": "high",
+    "reason": "automotive paint material"
+  },
+  "Box048001": {
+    "group": "body_panels",
+    "confidence": "high",
+    "reason": "automotive paint material"
+  },
+  "Object027.001": {
+    "group": "body_panels",
+    "confidence": "high",
+    "reason": "automotive paint material"
+  },
+  "Object027001": {
+    "group": "body_panels",
+    "confidence": "high",
+    "reason": "automotive paint material"
+  },
+  "Box018.001": {
+    "group": "glass_and_lights",
+    "confidence": "high",
+    "reason": "glass or lighting name/material"
+  },
+  "Box018001": {
+    "group": "glass_and_lights",
+    "confidence": "high",
+    "reason": "glass or lighting name/material"
+  },
+  "Box031.001": {
+    "group": "interior",
+    "confidence": "low",
+    "reason": "heuristic: inside cabin volume"
+  },
+  "Box031001": {
+    "group": "interior",
+    "confidence": "low",
+    "reason": "heuristic: inside cabin volume"
+  },
+  "Box030.001": {
+    "group": "interior",
+    "confidence": "high",
+    "reason": "interior name or upholstery material"
+  },
+  "Box030001": {
+    "group": "interior",
+    "confidence": "high",
+    "reason": "interior name or upholstery material"
+  },
+  "Line002.001": {
+    "group": "interior",
+    "confidence": "low",
+    "reason": "heuristic: inside cabin volume"
+  },
+  "Line002001": {
+    "group": "interior",
+    "confidence": "low",
+    "reason": "heuristic: inside cabin volume"
+  },
+  "Box032.001": {
+    "group": "interior",
+    "confidence": "low",
+    "reason": "heuristic: inside cabin volume"
+  },
+  "Box032001": {
+    "group": "interior",
+    "confidence": "low",
+    "reason": "heuristic: inside cabin volume"
+  },
+  "Box033.001": {
+    "group": "interior",
+    "confidence": "high",
+    "reason": "interior name or upholstery material"
+  },
+  "Box033001": {
+    "group": "interior",
+    "confidence": "high",
+    "reason": "interior name or upholstery material"
+  },
+  "017.001": {
+    "group": "misc",
+    "confidence": "low",
+    "reason": "anonymous mesh with no strong spatial match"
+  },
+  "017001": {
+    "group": "misc",
+    "confidence": "low",
+    "reason": "anonymous mesh with no strong spatial match"
+  },
+  "Box002.004": {
+    "group": "body_panels",
+    "confidence": "high",
+    "reason": "known large shell piece from PRD"
+  },
+  "Box002004": {
+    "group": "body_panels",
+    "confidence": "high",
+    "reason": "known large shell piece from PRD"
+  },
+  "Line004.001": {
+    "group": "body_panels",
+    "confidence": "high",
+    "reason": "automotive paint material"
+  },
+  "Line004001": {
+    "group": "body_panels",
+    "confidence": "high",
+    "reason": "automotive paint material"
+  },
+  "Plane013.001": {
+    "group": "glass_and_lights",
+    "confidence": "high",
+    "reason": "glass or lighting name/material"
+  },
+  "Plane013001": {
+    "group": "glass_and_lights",
+    "confidence": "high",
+    "reason": "glass or lighting name/material"
+  },
+  "Box037.001": {
+    "group": "body_panels",
+    "confidence": "low",
+    "reason": "heuristic: large outer dimension"
+  },
+  "Box037001": {
+    "group": "body_panels",
+    "confidence": "low",
+    "reason": "heuristic: large outer dimension"
+  },
+  "METAL_TAIL_LIGHT.001": {
+    "group": "glass_and_lights",
+    "confidence": "high",
+    "reason": "glass or lighting name/material"
+  },
+  "METAL_TAIL_LIGHT001": {
+    "group": "glass_and_lights",
+    "confidence": "high",
+    "reason": "glass or lighting name/material"
+  },
+  "METAL_TAIL_LIGHT_2.001": {
+    "group": "glass_and_lights",
+    "confidence": "high",
+    "reason": "glass or lighting name/material"
+  },
+  "METAL_TAIL_LIGHT_2001": {
+    "group": "glass_and_lights",
+    "confidence": "high",
+    "reason": "glass or lighting name/material"
+  },
+  "Box038.001": {
+    "group": "body_panels",
+    "confidence": "low",
+    "reason": "heuristic: large outer dimension"
+  },
+  "Box038001": {
+    "group": "body_panels",
+    "confidence": "low",
+    "reason": "heuristic: large outer dimension"
+  },
+  "GLASS_TAIL_LIGHT.001": {
+    "group": "glass_and_lights",
+    "confidence": "high",
+    "reason": "glass or lighting name/material"
+  },
+  "GLASS_TAIL_LIGHT001": {
+    "group": "glass_and_lights",
+    "confidence": "high",
+    "reason": "glass or lighting name/material"
+  },
+  "TAIL_GLOW.001": {
+    "group": "glass_and_lights",
+    "confidence": "high",
+    "reason": "glass or lighting name/material"
+  },
+  "TAIL_GLOW001": {
+    "group": "glass_and_lights",
+    "confidence": "high",
+    "reason": "glass or lighting name/material"
+  },
+  "Box049.001": {
+    "group": "misc",
+    "confidence": "low",
+    "reason": "anonymous mesh with no strong spatial match"
+  },
+  "Box049001": {
+    "group": "misc",
+    "confidence": "low",
+    "reason": "anonymous mesh with no strong spatial match"
+  },
+  "Shape001.001": {
+    "group": "glass_and_lights",
+    "confidence": "high",
+    "reason": "glass or lighting name/material"
+  },
+  "Shape001001": {
+    "group": "glass_and_lights",
+    "confidence": "high",
+    "reason": "glass or lighting name/material"
+  },
+  "Shape002.001": {
+    "group": "glass_and_lights",
+    "confidence": "high",
+    "reason": "glass or lighting name/material"
+  },
+  "Shape002001": {
+    "group": "glass_and_lights",
+    "confidence": "high",
+    "reason": "glass or lighting name/material"
+  },
+  "Line005.001": {
+    "group": "misc",
+    "confidence": "low",
+    "reason": "anonymous mesh with no strong spatial match"
+  },
+  "Line005001": {
+    "group": "misc",
+    "confidence": "low",
+    "reason": "anonymous mesh with no strong spatial match"
+  },
+  "Object048.001": {
+    "group": "body_panels",
+    "confidence": "high",
+    "reason": "automotive paint material"
+  },
+  "Object048001": {
+    "group": "body_panels",
+    "confidence": "high",
+    "reason": "automotive paint material"
+  },
+  "Box058.001": {
+    "group": "body_panels",
+    "confidence": "high",
+    "reason": "automotive paint material"
+  },
+  "Box058001": {
+    "group": "body_panels",
+    "confidence": "high",
+    "reason": "automotive paint material"
+  },
+  "GLASS003.001": {
+    "group": "glass_and_lights",
+    "confidence": "high",
+    "reason": "glass or lighting name/material"
+  },
+  "GLASS003001": {
+    "group": "glass_and_lights",
+    "confidence": "high",
+    "reason": "glass or lighting name/material"
+  },
+  "GLASS004.001": {
+    "group": "glass_and_lights",
+    "confidence": "high",
+    "reason": "glass or lighting name/material"
+  },
+  "GLASS004001": {
+    "group": "glass_and_lights",
+    "confidence": "high",
+    "reason": "glass or lighting name/material"
+  },
+  "Object053.001": {
+    "group": "misc",
+    "confidence": "low",
+    "reason": "anonymous mesh with no strong spatial match"
+  },
+  "Object053001": {
+    "group": "misc",
+    "confidence": "low",
+    "reason": "anonymous mesh with no strong spatial match"
+  },
+  "Object054.001": {
+    "group": "body_panels",
+    "confidence": "high",
+    "reason": "automotive paint material"
+  },
+  "Object054001": {
+    "group": "body_panels",
+    "confidence": "high",
+    "reason": "automotive paint material"
+  },
+  "Object055.001": {
+    "group": "misc",
+    "confidence": "low",
+    "reason": "anonymous mesh with no strong spatial match"
+  },
+  "Object055001": {
+    "group": "misc",
+    "confidence": "low",
+    "reason": "anonymous mesh with no strong spatial match"
+  },
+  "Object056.001": {
+    "group": "body_panels",
+    "confidence": "high",
+    "reason": "automotive paint material"
+  },
+  "Object056001": {
+    "group": "body_panels",
+    "confidence": "high",
+    "reason": "automotive paint material"
+  },
+  "Shape003.001": {
+    "group": "glass_and_lights",
+    "confidence": "high",
+    "reason": "glass or lighting name/material"
+  },
+  "Shape003001": {
+    "group": "glass_and_lights",
+    "confidence": "high",
+    "reason": "glass or lighting name/material"
+  },
+  "Shape004.001": {
+    "group": "glass_and_lights",
+    "confidence": "high",
+    "reason": "glass or lighting name/material"
+  },
+  "Shape004001": {
+    "group": "glass_and_lights",
+    "confidence": "high",
+    "reason": "glass or lighting name/material"
+  },
+  "Object057.001": {
+    "group": "body_panels",
+    "confidence": "low",
+    "reason": "heuristic: large outer dimension"
+  },
+  "Object057001": {
+    "group": "body_panels",
+    "confidence": "low",
+    "reason": "heuristic: large outer dimension"
+  },
+  "Object058.001": {
+    "group": "interior",
+    "confidence": "low",
+    "reason": "heuristic: inside cabin volume"
+  },
+  "Object058001": {
+    "group": "interior",
+    "confidence": "low",
+    "reason": "heuristic: inside cabin volume"
+  },
+  "Object059.001": {
+    "group": "interior",
+    "confidence": "high",
+    "reason": "interior name or upholstery material"
+  },
+  "Object059001": {
+    "group": "interior",
+    "confidence": "high",
+    "reason": "interior name or upholstery material"
+  },
+  "Object060.001": {
+    "group": "interior",
+    "confidence": "high",
+    "reason": "interior name or upholstery material"
+  },
+  "Object060001": {
+    "group": "interior",
+    "confidence": "high",
+    "reason": "interior name or upholstery material"
+  },
+  "Box060.002": {
+    "group": "interior",
+    "confidence": "high",
+    "reason": "interior name or upholstery material"
+  },
+  "Box060002": {
+    "group": "interior",
+    "confidence": "high",
+    "reason": "interior name or upholstery material"
+  },
+  "STITCH.001": {
+    "group": "interior",
+    "confidence": "high",
+    "reason": "interior name or upholstery material"
+  },
+  "STITCH001": {
+    "group": "interior",
+    "confidence": "high",
+    "reason": "interior name or upholstery material"
+  },
+  "SEAT_STITCHES.001": {
+    "group": "interior",
+    "confidence": "high",
+    "reason": "interior name or upholstery material"
+  },
+  "SEAT_STITCHES001": {
+    "group": "interior",
+    "confidence": "high",
+    "reason": "interior name or upholstery material"
+  },
+  "Box062.001": {
+    "group": "glass_and_lights",
+    "confidence": "high",
+    "reason": "glass or lighting name/material"
+  },
+  "Box062001": {
+    "group": "glass_and_lights",
+    "confidence": "high",
+    "reason": "glass or lighting name/material"
+  },
+  "Object006.002": {
+    "group": "interior",
+    "confidence": "low",
+    "reason": "heuristic: inside cabin volume"
+  },
+  "Object006002": {
+    "group": "interior",
+    "confidence": "low",
+    "reason": "heuristic: inside cabin volume"
+  },
+  "Object061.001": {
+    "group": "interior",
+    "confidence": "low",
+    "reason": "heuristic: inside cabin volume"
+  },
+  "Object061001": {
+    "group": "interior",
+    "confidence": "low",
+    "reason": "heuristic: inside cabin volume"
+  },
+  "Object063.001": {
+    "group": "interior",
+    "confidence": "low",
+    "reason": "heuristic: inside cabin volume"
+  },
+  "Object063001": {
+    "group": "interior",
+    "confidence": "low",
+    "reason": "heuristic: inside cabin volume"
+  },
+  "Box060.003": {
+    "group": "interior",
+    "confidence": "high",
+    "reason": "interior name or upholstery material"
+  },
+  "Box060003": {
+    "group": "interior",
+    "confidence": "high",
+    "reason": "interior name or upholstery material"
+  },
+  "Object064.001": {
+    "group": "misc",
+    "confidence": "low",
+    "reason": "anonymous mesh with no strong spatial match"
+  },
+  "Object064001": {
+    "group": "misc",
+    "confidence": "low",
+    "reason": "anonymous mesh with no strong spatial match"
+  },
+  "Object065.001": {
+    "group": "misc",
+    "confidence": "low",
+    "reason": "anonymous mesh with no strong spatial match"
+  },
+  "Object065001": {
+    "group": "misc",
+    "confidence": "low",
+    "reason": "anonymous mesh with no strong spatial match"
+  },
+  "Object066.001": {
+    "group": "misc",
+    "confidence": "low",
+    "reason": "anonymous mesh with no strong spatial match"
+  },
+  "Object066001": {
+    "group": "misc",
+    "confidence": "low",
+    "reason": "anonymous mesh with no strong spatial match"
+  },
+  "Object068.001": {
+    "group": "interior",
+    "confidence": "low",
+    "reason": "heuristic: inside cabin volume"
+  },
+  "Object068001": {
+    "group": "interior",
+    "confidence": "low",
+    "reason": "heuristic: inside cabin volume"
+  },
+  "ADASDAD.001": {
+    "group": "misc",
+    "confidence": "low",
+    "reason": "anonymous mesh with no strong spatial match"
+  },
+  "ADASDAD001": {
+    "group": "misc",
+    "confidence": "low",
+    "reason": "anonymous mesh with no strong spatial match"
+  },
+  "Caliper_018.001": {
+    "group": "brakes",
+    "confidence": "high",
+    "reason": "descriptive name Caliper_*"
+  },
+  "Caliper_018001": {
+    "group": "brakes",
+    "confidence": "high",
+    "reason": "descriptive name Caliper_*"
+  },
+  "Caliper_025.001": {
+    "group": "brakes",
+    "confidence": "high",
+    "reason": "descriptive name Caliper_*"
+  },
+  "Caliper_025001": {
+    "group": "brakes",
+    "confidence": "high",
+    "reason": "descriptive name Caliper_*"
+  },
+  "wheel_RL": {
+    "group": "wheels",
+    "confidence": "high",
+    "reason": "descriptive name wheel_*"
+  },
+  "wheel_FR": {
+    "group": "wheels",
+    "confidence": "high",
+    "reason": "descriptive name wheel_*"
+  },
+  "Caliper_039.001": {
+    "group": "brakes",
+    "confidence": "high",
+    "reason": "descriptive name Caliper_*"
+  },
+  "Caliper_039001": {
+    "group": "brakes",
+    "confidence": "high",
+    "reason": "descriptive name Caliper_*"
+  },
+  "wheel_FL": {
+    "group": "wheels",
+    "confidence": "high",
+    "reason": "descriptive name wheel_*"
+  },
+  "Sphere002.001": {
+    "group": "interior",
+    "confidence": "high",
+    "reason": "interior name or upholstery material"
+  },
+  "Sphere002001": {
+    "group": "interior",
+    "confidence": "high",
+    "reason": "interior name or upholstery material"
+  },
+  "Cylinder001.004": {
+    "group": "interior",
+    "confidence": "high",
+    "reason": "interior name or upholstery material"
+  },
+  "Cylinder001004": {
+    "group": "interior",
+    "confidence": "high",
+    "reason": "interior name or upholstery material"
+  },
+  "Box006.004": {
+    "group": "interior",
+    "confidence": "high",
+    "reason": "interior name or upholstery material"
+  },
+  "Box006004": {
+    "group": "interior",
+    "confidence": "high",
+    "reason": "interior name or upholstery material"
+  },
+  "Object009.001": {
+    "group": "glass_and_lights",
+    "confidence": "high",
+    "reason": "glass or lighting name/material"
+  },
+  "Object009001": {
+    "group": "glass_and_lights",
+    "confidence": "high",
+    "reason": "glass or lighting name/material"
+  },
+  "Object016.003": {
+    "group": "misc",
+    "confidence": "low",
+    "reason": "anonymous mesh with no strong spatial match"
+  },
+  "Object016003": {
+    "group": "misc",
+    "confidence": "low",
+    "reason": "anonymous mesh with no strong spatial match"
+  },
+  "Object052.001": {
+    "group": "body_panels",
+    "confidence": "high",
+    "reason": "automotive paint material"
+  },
+  "Object052001": {
+    "group": "body_panels",
+    "confidence": "high",
+    "reason": "automotive paint material"
+  },
+  "Object051.001": {
+    "group": "body_panels",
+    "confidence": "high",
+    "reason": "automotive paint material"
+  },
+  "Object051001": {
+    "group": "body_panels",
+    "confidence": "high",
+    "reason": "automotive paint material"
+  },
+  "Object013.002": {
+    "group": "misc",
+    "confidence": "low",
+    "reason": "anonymous mesh with no strong spatial match"
+  },
+  "Object013002": {
+    "group": "misc",
+    "confidence": "low",
+    "reason": "anonymous mesh with no strong spatial match"
+  },
+  "Box011.004": {
+    "group": "interior",
+    "confidence": "low",
+    "reason": "heuristic: inside cabin volume"
+  },
+  "Box011004": {
+    "group": "interior",
+    "confidence": "low",
+    "reason": "heuristic: inside cabin volume"
+  },
+  "Object017.001": {
+    "group": "glass_and_lights",
+    "confidence": "high",
+    "reason": "glass or lighting name/material"
+  },
+  "Object017001": {
+    "group": "glass_and_lights",
+    "confidence": "high",
+    "reason": "glass or lighting name/material"
+  },
+  "Object018.001": {
+    "group": "misc",
+    "confidence": "low",
+    "reason": "anonymous mesh with no strong spatial match"
+  },
+  "Object018001": {
+    "group": "misc",
+    "confidence": "low",
+    "reason": "anonymous mesh with no strong spatial match"
+  },
+  "Object019.003": {
+    "group": "interior",
+    "confidence": "high",
+    "reason": "interior name or upholstery material"
+  },
+  "Object019003": {
+    "group": "interior",
+    "confidence": "high",
+    "reason": "interior name or upholstery material"
+  },
+  "int.002": {
+    "group": "interior",
+    "confidence": "high",
+    "reason": "interior name or upholstery material"
+  },
+  "int002": {
+    "group": "interior",
+    "confidence": "high",
+    "reason": "interior name or upholstery material"
+  },
+  "Sphere003.001": {
+    "group": "glass_and_lights",
+    "confidence": "high",
+    "reason": "glass or lighting name/material"
+  },
+  "Sphere003001": {
+    "group": "glass_and_lights",
+    "confidence": "high",
+    "reason": "glass or lighting name/material"
+  },
+  "Object021.002": {
+    "group": "glass_and_lights",
+    "confidence": "high",
+    "reason": "glass or lighting name/material"
+  },
+  "Object021002": {
+    "group": "glass_and_lights",
+    "confidence": "high",
+    "reason": "glass or lighting name/material"
+  },
+  "Object046.001": {
+    "group": "glass_and_lights",
+    "confidence": "high",
+    "reason": "glass or lighting name/material"
+  },
+  "Object046001": {
+    "group": "glass_and_lights",
+    "confidence": "high",
+    "reason": "glass or lighting name/material"
+  },
+  "Box023.001": {
+    "group": "glass_and_lights",
+    "confidence": "high",
+    "reason": "glass or lighting name/material"
+  },
+  "Box023001": {
+    "group": "glass_and_lights",
+    "confidence": "high",
+    "reason": "glass or lighting name/material"
+  },
+  "Box013.003": {
+    "group": "interior",
+    "confidence": "low",
+    "reason": "heuristic: inside cabin volume"
+  },
+  "Box013003": {
+    "group": "interior",
+    "confidence": "low",
+    "reason": "heuristic: inside cabin volume"
+  },
+  "Box015.002": {
+    "group": "glass_and_lights",
+    "confidence": "high",
+    "reason": "glass or lighting name/material"
+  },
+  "Box015002": {
+    "group": "glass_and_lights",
+    "confidence": "high",
+    "reason": "glass or lighting name/material"
+  },
+  "Object026.003": {
+    "group": "misc",
+    "confidence": "low",
+    "reason": "anonymous mesh with no strong spatial match"
+  },
+  "Object026003": {
+    "group": "misc",
+    "confidence": "low",
+    "reason": "anonymous mesh with no strong spatial match"
+  },
+  "Box016.001": {
+    "group": "interior",
+    "confidence": "low",
+    "reason": "heuristic: inside cabin volume"
+  },
+  "Box016001": {
+    "group": "interior",
+    "confidence": "low",
+    "reason": "heuristic: inside cabin volume"
+  },
+  "Box015.003": {
+    "group": "interior",
+    "confidence": "low",
+    "reason": "heuristic: inside cabin volume"
+  },
+  "Box015003": {
+    "group": "interior",
+    "confidence": "low",
+    "reason": "heuristic: inside cabin volume"
+  },
+  "Object028.002": {
+    "group": "interior",
+    "confidence": "high",
+    "reason": "interior name or upholstery material"
+  },
+  "Object028002": {
+    "group": "interior",
+    "confidence": "high",
+    "reason": "interior name or upholstery material"
+  },
+  "Object029.002": {
+    "group": "interior",
+    "confidence": "low",
+    "reason": "heuristic: inside cabin volume"
+  },
+  "Object029002": {
+    "group": "interior",
+    "confidence": "low",
+    "reason": "heuristic: inside cabin volume"
+  },
+  "Plane005.003": {
+    "group": "glass_and_lights",
+    "confidence": "high",
+    "reason": "glass or lighting name/material"
+  },
+  "Plane005003": {
+    "group": "glass_and_lights",
+    "confidence": "high",
+    "reason": "glass or lighting name/material"
+  },
+  "Object033.002": {
+    "group": "misc",
+    "confidence": "low",
+    "reason": "anonymous mesh with no strong spatial match"
+  },
+  "Object033002": {
+    "group": "misc",
+    "confidence": "low",
+    "reason": "anonymous mesh with no strong spatial match"
+  },
+  "Object034.003": {
+    "group": "misc",
+    "confidence": "low",
+    "reason": "anonymous mesh with no strong spatial match"
+  },
+  "Object034003": {
+    "group": "misc",
+    "confidence": "low",
+    "reason": "anonymous mesh with no strong spatial match"
+  },
+  "speedook.001": {
+    "group": "interior",
+    "confidence": "high",
+    "reason": "interior name or upholstery material"
+  },
+  "speedook001": {
+    "group": "interior",
+    "confidence": "high",
+    "reason": "interior name or upholstery material"
+  },
+  "Sphere005.001": {
+    "group": "interior",
+    "confidence": "low",
+    "reason": "heuristic: inside cabin volume"
+  },
+  "Sphere005001": {
+    "group": "interior",
+    "confidence": "low",
+    "reason": "heuristic: inside cabin volume"
+  },
+  "Object035.001": {
+    "group": "interior",
+    "confidence": "low",
+    "reason": "heuristic: inside cabin volume"
+  },
+  "Object035001": {
+    "group": "interior",
+    "confidence": "low",
+    "reason": "heuristic: inside cabin volume"
+  },
+  "Cylinder002.003": {
+    "group": "misc",
+    "confidence": "low",
+    "reason": "anonymous mesh with no strong spatial match"
+  },
+  "Cylinder002003": {
+    "group": "misc",
+    "confidence": "low",
+    "reason": "anonymous mesh with no strong spatial match"
+  },
+  "Object036.001": {
+    "group": "misc",
+    "confidence": "low",
+    "reason": "anonymous mesh with no strong spatial match"
+  },
+  "Object036001": {
+    "group": "misc",
+    "confidence": "low",
+    "reason": "anonymous mesh with no strong spatial match"
+  },
+  "Object037.003": {
+    "group": "misc",
+    "confidence": "low",
+    "reason": "anonymous mesh with no strong spatial match"
+  },
+  "Object037003": {
+    "group": "misc",
+    "confidence": "low",
+    "reason": "anonymous mesh with no strong spatial match"
+  },
+  "int.003": {
+    "group": "interior",
+    "confidence": "high",
+    "reason": "interior name or upholstery material"
+  },
+  "int003": {
+    "group": "interior",
+    "confidence": "high",
+    "reason": "interior name or upholstery material"
+  },
+  "Object001.002": {
+    "group": "interior",
+    "confidence": "high",
+    "reason": "interior name or upholstery material"
+  },
+  "Object001002": {
+    "group": "interior",
+    "confidence": "high",
+    "reason": "interior name or upholstery material"
+  },
+  "Plane002.003": {
+    "group": "glass_and_lights",
+    "confidence": "high",
+    "reason": "glass or lighting name/material"
+  },
+  "Plane002003": {
+    "group": "glass_and_lights",
+    "confidence": "high",
+    "reason": "glass or lighting name/material"
+  },
+  "Plane001.005": {
+    "group": "glass_and_lights",
+    "confidence": "high",
+    "reason": "glass or lighting name/material"
+  },
+  "Plane001005": {
+    "group": "glass_and_lights",
+    "confidence": "high",
+    "reason": "glass or lighting name/material"
+  },
+  "Object003.001": {
+    "group": "interior",
+    "confidence": "low",
+    "reason": "heuristic: inside cabin volume"
+  },
+  "Object003001": {
+    "group": "interior",
+    "confidence": "low",
+    "reason": "heuristic: inside cabin volume"
+  },
+  "Box002.005": {
+    "group": "interior",
+    "confidence": "low",
+    "reason": "heuristic: inside cabin volume"
+  },
+  "Box002005": {
+    "group": "interior",
+    "confidence": "low",
+    "reason": "heuristic: inside cabin volume"
+  },
+  "Box003.002": {
+    "group": "interior",
+    "confidence": "low",
+    "reason": "heuristic: inside cabin volume"
+  },
+  "Box003002": {
+    "group": "interior",
+    "confidence": "low",
+    "reason": "heuristic: inside cabin volume"
+  },
+  "Object006.003": {
+    "group": "interior",
+    "confidence": "high",
+    "reason": "interior name or upholstery material"
+  },
+  "Object006003": {
+    "group": "interior",
+    "confidence": "high",
+    "reason": "interior name or upholstery material"
+  },
+  "Sphere001.001": {
+    "group": "glass_and_lights",
+    "confidence": "high",
+    "reason": "glass or lighting name/material"
+  },
+  "Sphere001001": {
+    "group": "glass_and_lights",
+    "confidence": "high",
+    "reason": "glass or lighting name/material"
+  },
+  "Box017.001": {
+    "group": "glass_and_lights",
+    "confidence": "high",
+    "reason": "glass or lighting name/material"
+  },
+  "Box017001": {
+    "group": "glass_and_lights",
+    "confidence": "high",
+    "reason": "glass or lighting name/material"
+  },
+  "Box020.001": {
+    "group": "body_panels",
+    "confidence": "high",
+    "reason": "automotive paint material"
+  },
+  "Box020001": {
+    "group": "body_panels",
+    "confidence": "high",
+    "reason": "automotive paint material"
+  },
+  "Box010.002": {
+    "group": "body_panels",
+    "confidence": "low",
+    "reason": "heuristic: large outer dimension"
+  },
+  "Box010002": {
+    "group": "body_panels",
+    "confidence": "low",
+    "reason": "heuristic: large outer dimension"
+  },
+  "Box021.001": {
+    "group": "interior",
+    "confidence": "low",
+    "reason": "heuristic: inside cabin volume"
+  },
+  "Box021001": {
+    "group": "interior",
+    "confidence": "low",
+    "reason": "heuristic: inside cabin volume"
+  },
+  "Object021.003": {
+    "group": "glass_and_lights",
+    "confidence": "high",
+    "reason": "glass or lighting name/material"
+  },
+  "Object021003": {
+    "group": "glass_and_lights",
+    "confidence": "high",
+    "reason": "glass or lighting name/material"
+  },
+  "Object022.001": {
+    "group": "glass_and_lights",
+    "confidence": "high",
+    "reason": "glass or lighting name/material"
+  },
+  "Object022001": {
+    "group": "glass_and_lights",
+    "confidence": "high",
+    "reason": "glass or lighting name/material"
+  },
+  "Object024.002": {
+    "group": "interior",
+    "confidence": "low",
+    "reason": "heuristic: inside cabin volume"
+  },
+  "Object024002": {
+    "group": "interior",
+    "confidence": "low",
+    "reason": "heuristic: inside cabin volume"
+  },
+  "Object025.001": {
+    "group": "interior",
+    "confidence": "low",
+    "reason": "heuristic: inside cabin volume"
+  },
+  "Object025001": {
+    "group": "interior",
+    "confidence": "low",
+    "reason": "heuristic: inside cabin volume"
+  },
+  "Object026.004": {
+    "group": "misc",
+    "confidence": "low",
+    "reason": "anonymous mesh with no strong spatial match"
+  },
+  "Object026004": {
+    "group": "misc",
+    "confidence": "low",
+    "reason": "anonymous mesh with no strong spatial match"
+  },
+  "Object028.003": {
+    "group": "body_panels",
+    "confidence": "high",
+    "reason": "automotive paint material"
+  },
+  "Object028003": {
+    "group": "body_panels",
+    "confidence": "high",
+    "reason": "automotive paint material"
+  },
+  "Box026.001": {
+    "group": "body_panels",
+    "confidence": "high",
+    "reason": "automotive paint material"
+  },
+  "Box026001": {
+    "group": "body_panels",
+    "confidence": "high",
+    "reason": "automotive paint material"
+  },
+  "Object029.003": {
+    "group": "interior",
+    "confidence": "low",
+    "reason": "heuristic: inside cabin volume"
+  },
+  "Object029003": {
+    "group": "interior",
+    "confidence": "low",
+    "reason": "heuristic: inside cabin volume"
+  },
+  "Plane010.001": {
+    "group": "glass_and_lights",
+    "confidence": "high",
+    "reason": "glass or lighting name/material"
+  },
+  "Plane010001": {
+    "group": "glass_and_lights",
+    "confidence": "high",
+    "reason": "glass or lighting name/material"
+  },
+  "Box029.001": {
+    "group": "body_panels",
+    "confidence": "high",
+    "reason": "automotive paint material"
+  },
+  "Box029001": {
+    "group": "body_panels",
+    "confidence": "high",
+    "reason": "automotive paint material"
+  },
+  "Box022.001": {
+    "group": "glass_and_lights",
+    "confidence": "high",
+    "reason": "glass or lighting name/material"
+  },
+  "Box022001": {
+    "group": "glass_and_lights",
+    "confidence": "high",
+    "reason": "glass or lighting name/material"
+  },
+  "Object013.003": {
+    "group": "interior",
+    "confidence": "low",
+    "reason": "heuristic: inside cabin volume"
+  },
+  "Object013003": {
+    "group": "interior",
+    "confidence": "low",
+    "reason": "heuristic: inside cabin volume"
+  },
+  "Object012.001": {
+    "group": "body_panels",
+    "confidence": "high",
+    "reason": "automotive paint material"
+  },
+  "Object012001": {
+    "group": "body_panels",
+    "confidence": "high",
+    "reason": "automotive paint material"
+  },
+  "bugatti_logo001.001": {
+    "group": "interior",
+    "confidence": "high",
+    "reason": "interior name or upholstery material"
+  },
+  "bugatti_logo001001": {
+    "group": "interior",
+    "confidence": "high",
+    "reason": "interior name or upholstery material"
+  },
+  "Object004.001": {
+    "group": "interior",
+    "confidence": "low",
+    "reason": "heuristic: inside cabin volume"
+  },
+  "Object004001": {
+    "group": "interior",
+    "confidence": "low",
+    "reason": "heuristic: inside cabin volume"
+  },
+  "Box009.002": {
+    "group": "interior",
+    "confidence": "low",
+    "reason": "heuristic: inside cabin volume"
+  },
+  "Box009002": {
+    "group": "interior",
+    "confidence": "low",
+    "reason": "heuristic: inside cabin volume"
+  },
+  "Object007.001": {
+    "group": "misc",
+    "confidence": "low",
+    "reason": "anonymous mesh with no strong spatial match"
+  },
+  "Object007001": {
+    "group": "misc",
+    "confidence": "low",
+    "reason": "anonymous mesh with no strong spatial match"
+  },
+  "Box008.001": {
+    "group": "body_panels",
+    "confidence": "high",
+    "reason": "automotive paint material"
+  },
+  "Box008001": {
+    "group": "body_panels",
+    "confidence": "high",
+    "reason": "automotive paint material"
+  },
+  "Box007.001": {
+    "group": "interior",
+    "confidence": "low",
+    "reason": "heuristic: inside cabin volume"
+  },
+  "Box007001": {
+    "group": "interior",
+    "confidence": "low",
+    "reason": "heuristic: inside cabin volume"
+  },
+  "Object005.001": {
+    "group": "interior",
+    "confidence": "low",
+    "reason": "heuristic: inside cabin volume"
+  },
+  "Object005001": {
+    "group": "interior",
+    "confidence": "low",
+    "reason": "heuristic: inside cabin volume"
+  },
+  "Box005.002": {
+    "group": "glass_and_lights",
+    "confidence": "high",
+    "reason": "glass or lighting name/material"
+  },
+  "Box005002": {
+    "group": "glass_and_lights",
+    "confidence": "high",
+    "reason": "glass or lighting name/material"
+  },
+  "Object001.003": {
+    "group": "glass_and_lights",
+    "confidence": "high",
+    "reason": "glass or lighting name/material"
+  },
+  "Object001003": {
+    "group": "glass_and_lights",
+    "confidence": "high",
+    "reason": "glass or lighting name/material"
+  },
+  "Plane004.001": {
+    "group": "glass_and_lights",
+    "confidence": "high",
+    "reason": "glass or lighting name/material"
+  },
+  "Plane004001": {
+    "group": "glass_and_lights",
+    "confidence": "high",
+    "reason": "glass or lighting name/material"
+  },
+  "Object002.001": {
+    "group": "glass_and_lights",
+    "confidence": "high",
+    "reason": "glass or lighting name/material"
+  },
+  "Object002001": {
+    "group": "glass_and_lights",
+    "confidence": "high",
+    "reason": "glass or lighting name/material"
+  },
+  "Box003.003": {
+    "group": "glass_and_lights",
+    "confidence": "high",
+    "reason": "glass or lighting name/material"
+  },
+  "Box003003": {
+    "group": "glass_and_lights",
+    "confidence": "high",
+    "reason": "glass or lighting name/material"
+  },
+  "Box004.002": {
+    "group": "interior",
+    "confidence": "low",
+    "reason": "heuristic: inside cabin volume"
+  },
+  "Box004002": {
+    "group": "interior",
+    "confidence": "low",
+    "reason": "heuristic: inside cabin volume"
+  },
+  "Box028.001": {
+    "group": "body_panels",
+    "confidence": "high",
+    "reason": "automotive paint material"
+  },
+  "Box028001": {
+    "group": "body_panels",
+    "confidence": "high",
+    "reason": "automotive paint material"
+  },
+  "Object014.001": {
+    "group": "interior",
+    "confidence": "low",
+    "reason": "heuristic: inside cabin volume"
+  },
+  "Object014001": {
+    "group": "interior",
+    "confidence": "low",
+    "reason": "heuristic: inside cabin volume"
+  },
+  "Line001.001": {
+    "group": "body_panels",
+    "confidence": "high",
+    "reason": "automotive paint material"
+  },
+  "Line001001": {
+    "group": "body_panels",
+    "confidence": "high",
+    "reason": "automotive paint material"
+  },
+  "Object011.002": {
+    "group": "interior",
+    "confidence": "low",
+    "reason": "heuristic: inside cabin volume"
+  },
+  "Object011002": {
+    "group": "interior",
+    "confidence": "low",
+    "reason": "heuristic: inside cabin volume"
+  },
+  "Object024.003": {
+    "group": "interior",
+    "confidence": "high",
+    "reason": "interior name or upholstery material"
+  },
+  "Object024003": {
+    "group": "interior",
+    "confidence": "high",
+    "reason": "interior name or upholstery material"
+  },
+  "Box014.003": {
+    "group": "body_panels",
+    "confidence": "low",
+    "reason": "heuristic: large outer dimension"
+  },
+  "Box014003": {
+    "group": "body_panels",
+    "confidence": "low",
+    "reason": "heuristic: large outer dimension"
+  },
+  "Box012.003": {
+    "group": "glass_and_lights",
+    "confidence": "high",
+    "reason": "glass or lighting name/material"
+  },
+  "Box012003": {
+    "group": "glass_and_lights",
+    "confidence": "high",
+    "reason": "glass or lighting name/material"
+  },
+  "Sphere004.001": {
+    "group": "interior",
+    "confidence": "high",
+    "reason": "interior name or upholstery material"
+  },
+  "Sphere004001": {
+    "group": "interior",
+    "confidence": "high",
+    "reason": "interior name or upholstery material"
+  },
+  "Object020.003": {
+    "group": "interior",
+    "confidence": "low",
+    "reason": "heuristic: inside cabin volume"
+  },
+  "Object020003": {
+    "group": "interior",
+    "confidence": "low",
+    "reason": "heuristic: inside cabin volume"
+  },
+  "Box010.003": {
+    "group": "glass_and_lights",
+    "confidence": "high",
+    "reason": "glass or lighting name/material"
+  },
+  "Box010003": {
+    "group": "glass_and_lights",
+    "confidence": "high",
+    "reason": "glass or lighting name/material"
+  },
+  "Box009.003": {
+    "group": "misc",
+    "confidence": "low",
+    "reason": "anonymous mesh with no strong spatial match"
+  },
+  "Box009003": {
+    "group": "misc",
+    "confidence": "low",
+    "reason": "anonymous mesh with no strong spatial match"
+  },
+  "Object011.003": {
+    "group": "body_panels",
+    "confidence": "low",
+    "reason": "heuristic: large outer dimension"
+  },
+  "Object011003": {
+    "group": "body_panels",
+    "confidence": "low",
+    "reason": "heuristic: large outer dimension"
+  },
+  "Box005.003": {
+    "group": "interior",
+    "confidence": "low",
+    "reason": "heuristic: inside cabin volume"
+  },
+  "Box005003": {
+    "group": "interior",
+    "confidence": "low",
+    "reason": "heuristic: inside cabin volume"
+  },
+  "Box004.003": {
+    "group": "misc",
+    "confidence": "low",
+    "reason": "anonymous mesh with no strong spatial match"
+  },
+  "Box004003": {
+    "group": "misc",
+    "confidence": "low",
+    "reason": "anonymous mesh with no strong spatial match"
+  },
+  "Box027.001": {
+    "group": "glass_and_lights",
+    "confidence": "high",
+    "reason": "glass or lighting name/material"
+  },
+  "Box027001": {
+    "group": "glass_and_lights",
+    "confidence": "high",
+    "reason": "glass or lighting name/material"
+  },
+  "wheel_RR": {
+    "group": "wheels",
+    "confidence": "high",
+    "reason": "descriptive name wheel_*"
+  },
+  "Box006.005": {
+    "group": "interior",
+    "confidence": "high",
+    "reason": "interior name or upholstery material"
+  },
+  "Box006005": {
+    "group": "interior",
+    "confidence": "high",
+    "reason": "interior name or upholstery material"
+  },
+  "Object026.005": {
+    "group": "misc",
+    "confidence": "low",
+    "reason": "anonymous mesh with no strong spatial match"
+  },
+  "Object026005": {
+    "group": "misc",
+    "confidence": "low",
+    "reason": "anonymous mesh with no strong spatial match"
+  },
+  "Cylinder001.005": {
+    "group": "interior",
+    "confidence": "high",
+    "reason": "interior name or upholstery material"
+  },
+  "Cylinder001005": {
+    "group": "interior",
+    "confidence": "high",
+    "reason": "interior name or upholstery material"
+  },
+  "Caliper_018.002": {
+    "group": "brakes",
+    "confidence": "high",
+    "reason": "descriptive name Caliper_*"
+  },
+  "Caliper_018002": {
+    "group": "brakes",
+    "confidence": "high",
+    "reason": "descriptive name Caliper_*"
+  }
+}

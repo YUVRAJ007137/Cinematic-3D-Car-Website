@@ -1,0 +1,863 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Model Parts Inspector — Cinematic 3D Car</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background: #09090c;
+      color: #e2e8f0;
+      overflow: hidden;
+      display: flex;
+      height: 100vh;
+      width: 100vw;
+    }
+    #viewport-container {
+      flex: 1;
+      position: relative;
+      height: 100%;
+      background: radial-gradient(circle at 50% 40%, #161824 0%, #08080a 100%);
+    }
+    #webgl-canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+    #sidebar {
+      width: 440px;
+      height: 100%;
+      background: rgba(14, 15, 20, 0.96);
+      backdrop-filter: blur(24px);
+      border-left: 1px solid rgba(255, 255, 255, 0.08);
+      display: flex;
+      flex-direction: column;
+      z-index: 10;
+    }
+    .panel-header {
+      padding: 16px 20px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .panel-header h1 {
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      color: #fff;
+    }
+    .badge {
+      font-size: 11px;
+      padding: 3px 8px;
+      border-radius: 12px;
+      background: rgba(59, 130, 246, 0.15);
+      color: #60a5fa;
+      border: 1px solid rgba(59, 130, 246, 0.3);
+    }
+    .toolbar {
+      padding: 12px 16px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .search-box {
+      width: 100%;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 6px;
+      padding: 8px 12px;
+      color: #fff;
+      font-size: 13px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .search-box:focus {
+      border-color: #3b82f6;
+    }
+    .btn-row {
+      display: flex;
+      gap: 6px;
+    }
+    .btn {
+      flex: 1;
+      background: rgba(255, 255, 255, 0.07);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 6px;
+      padding: 6px 10px;
+      color: #cbd5e1;
+      font-size: 11.5px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.15s;
+      text-align: center;
+    }
+    .btn:hover {
+      background: rgba(255, 255, 255, 0.14);
+      color: #fff;
+    }
+    .btn-primary {
+      background: #2563eb;
+      border-color: #3b82f6;
+      color: #fff;
+    }
+    .btn-primary:hover {
+      background: #1d4ed8;
+    }
+    .group-filters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      padding: 10px 16px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      font-size: 11px;
+    }
+    .group-chip {
+      padding: 3px 8px;
+      border-radius: 4px;
+      background: rgba(255, 255, 255, 0.05);
+      cursor: pointer;
+      color: #94a3b8;
+      border: 1px solid transparent;
+      transition: all 0.15s;
+    }
+    .group-chip:hover {
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+    }
+    .group-chip.active {
+      background: rgba(59, 130, 246, 0.25);
+      border-color: #3b82f6;
+      color: #bfdbfe;
+    }
+    #parts-list {
+      flex: 1;
+      overflow-y: auto;
+      padding: 8px 12px;
+    }
+    .part-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 10px;
+      border-radius: 6px;
+      cursor: pointer;
+      margin-bottom: 2px;
+      font-size: 12px;
+      transition: background 0.15s;
+      user-select: none;
+    }
+    .part-item:hover {
+      background: rgba(255, 255, 255, 0.05);
+    }
+    .part-item.selected {
+      background: rgba(59, 130, 246, 0.22);
+      border-left: 3px solid #3b82f6;
+    }
+    .part-item input[type="checkbox"] {
+      cursor: pointer;
+      accent-color: #3b82f6;
+    }
+    .part-name {
+      flex: 1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      color: #e2e8f0;
+      font-family: monospace;
+      font-size: 11.5px;
+    }
+    .part-group-tag {
+      font-size: 10px;
+      padding: 2px 6px;
+      border-radius: 4px;
+      text-transform: capitalize;
+    }
+    /* Group tag colors */
+    .tag-body_panels { background: rgba(239, 68, 68, 0.2); color: #f87171; }
+    .tag-glass_and_lights { background: rgba(56, 189, 248, 0.2); color: #38bdf8; }
+    .tag-interior { background: rgba(245, 158, 11, 0.2); color: #fbbf24; }
+    .tag-mechanical { background: rgba(168, 85, 247, 0.2); color: #c084fc; }
+    .tag-brakes { background: rgba(236, 72, 153, 0.2); color: #f472b6; }
+    .tag-wheels { background: rgba(34, 197, 94, 0.2); color: #4ade80; }
+    .tag-misc { background: rgba(148, 163, 184, 0.2); color: #94a3b8; }
+
+    .inspector-card {
+      padding: 16px 20px;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      background: rgba(10, 11, 15, 0.95);
+    }
+    .inspector-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: #fff;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .prop-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 4px;
+      font-size: 11px;
+    }
+    .prop-label { color: #888; }
+    .prop-value { color: #ccc; font-family: monospace; }
+    .select-group {
+      width: 100%;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 6px;
+      padding: 6px 10px;
+      color: #fff;
+      font-size: 12px;
+      margin-top: 8px;
+      outline: none;
+    }
+    .select-group option {
+      background: #181820;
+      color: #fff;
+    }
+    #loading-overlay {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: #0a0a0c;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      transition: opacity 0.4s ease;
+    }
+    .spinner {
+      width: 36px;
+      height: 36px;
+      border: 3px solid rgba(255, 255, 255, 0.1);
+      border-top-color: #3b82f6;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin-bottom: 12px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    #stats-hud {
+      position: absolute;
+      top: 16px;
+      left: 16px;
+      background: rgba(15, 17, 23, 0.88);
+      backdrop-filter: blur(12px);
+      padding: 12px 16px;
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      font-size: 11px;
+      line-height: 1.6;
+      color: #94a3b8;
+      pointer-events: none;
+    }
+    #stats-hud strong { color: #f1f5f9; }
+  </style>
+</head>
+<body>
+  <div id="viewport-container">
+    <div id="loading-overlay">
+      <div class="spinner"></div>
+      <div id="loading-text" style="font-size: 13px; color: #aaa;">Loading Veyron Model...</div>
+    </div>
+    <div id="stats-hud">
+      <div>Model: <strong>veyron.glb</strong> (2.69 MB)</div>
+      <div>Total Meshes: <strong id="hud-total-meshes">196</strong> | Visible: <strong id="hud-visible-meshes">196</strong></div>
+      <div>Controls: <strong>Left-Drag Rotate | Right-Drag Pan | Scroll Zoom</strong></div>
+      <div>Selection: <strong>Click any 3D mesh</strong> to inspect and assign group</div>
+    </div>
+    <canvas id="webgl-canvas"></canvas>
+  </div>
+
+  <div id="sidebar">
+    <div class="panel-header">
+      <h1>Mesh Inspector</h1>
+      <span class="badge" id="parts-counter">196 Parts</span>
+    </div>
+
+    <div class="toolbar">
+      <input type="text" id="search-input" class="search-box" placeholder="Filter by name, material, or group...">
+      <div class="btn-row">
+        <button id="btn-show-all" class="btn">Show All</button>
+        <button id="btn-hide-others" class="btn">Hide Others</button>
+        <button id="btn-isolate-group" class="btn">Solo Group</button>
+        <button id="btn-reset-cam" class="btn">Reset Cam</button>
+      </div>
+      <div class="btn-row">
+        <button id="btn-export-groups" class="btn btn-primary">Export groups.json</button>
+      </div>
+    </div>
+
+    <div class="group-filters" id="group-filters">
+      <div class="group-chip active" data-group="all">All (<span id="count-all">196</span>)</div>
+      <div class="group-chip" data-group="body_panels">Body (<span id="count-body_panels">0</span>)</div>
+      <div class="group-chip" data-group="glass_and_lights">Glass/Lights (<span id="count-glass_and_lights">0</span>)</div>
+      <div class="group-chip" data-group="interior">Interior (<span id="count-interior">0</span>)</div>
+      <div class="group-chip" data-group="mechanical">Mechanical (<span id="count-mechanical">0</span>)</div>
+      <div class="group-chip" data-group="brakes">Brakes (<span id="count-brakes">0</span>)</div>
+      <div class="group-chip" data-group="wheels">Wheels (<span id="count-wheels">0</span>)</div>
+      <div class="group-chip" data-group="misc">Misc (<span id="count-misc">0</span>)</div>
+    </div>
+
+    <div id="parts-list"></div>
+
+    <div class="inspector-card" id="selection-card">
+      <div class="inspector-title">
+        <span id="card-part-name" style="font-family: monospace;">No part selected</span>
+        <span id="card-confidence" class="badge" style="display:none;">high</span>
+      </div>
+      <div id="card-props" style="display:none;">
+        <div class="prop-row">
+          <span class="prop-label">Triangles:</span>
+          <span class="prop-value" id="card-triangles">-</span>
+        </div>
+        <div class="prop-row">
+          <span class="prop-label">Dimensions (W/H/L):</span>
+          <span class="prop-value" id="card-size">-</span>
+        </div>
+        <div class="prop-row">
+          <span class="prop-label">Center (X/Y/Z):</span>
+          <span class="prop-value" id="card-center">-</span>
+        </div>
+        <div class="prop-row">
+          <span class="prop-label">Materials:</span>
+          <span class="prop-value" id="card-materials">-</span>
+        </div>
+        <div class="prop-row">
+          <span class="prop-label">Classification Basis:</span>
+          <span class="prop-value" id="card-reason" style="font-family: inherit; font-size: 10px; max-width: 250px; text-align: right;">-</span>
+        </div>
+        <div style="margin-top: 10px;">
+          <label style="font-size: 11px; color: #94a3b8;">Assign Group:</label>
+          <select id="card-group-select" class="select-group">
+            <option value="body_panels">body_panels</option>
+            <option value="glass_and_lights">glass_and_lights</option>
+            <option value="interior">interior</option>
+            <option value="mechanical">mechanical</option>
+            <option value="brakes">brakes</option>
+            <option value="wheels">wheels</option>
+            <option value="misc">misc</option>
+          </select>
+        </div>
+      </div>
+      <div id="card-placeholder" style="font-size: 11px; color: #64748b; font-style: italic;">
+        Click any mesh in the 3D viewport or select from the list above.
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import * as THREE from 'three';
+    import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
+    import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+    import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js';
+    import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js';
+
+    // State
+    let scene, camera, renderer, controls;
+    let modelRoot = null;
+    let meshesMap = new Map(); // displayName -> THREE.Mesh or THREE.Group
+    let groupsData = {}; // name -> { group, confidence, reason }
+    let partsMeta = []; // list from parts.json
+    let selectedMesh = null;
+    let highlightBox = null;
+
+    const canvas = document.getElementById('webgl-canvas');
+    const container = document.getElementById('viewport-container');
+
+    // Helper to find group info for a node/mesh
+    function getGroupInfo(name, parentName) {
+      if (!name) return { group: 'misc', confidence: 'low', reason: 'unassigned' };
+      const clean = name.replace(/\./g, '');
+      const cleanParent = parentName ? parentName.replace(/\./g, '') : null;
+
+      return groupsData[name] ||
+             groupsData[clean] ||
+             (parentName && (groupsData[parentName] || groupsData[cleanParent])) ||
+             { group: 'misc', confidence: 'low', reason: 'unassigned' };
+    }
+
+    async function init() {
+      // 1. Scene setup
+      scene = new THREE.Scene();
+      scene.background = new THREE.Color(0x0a0a0d);
+
+      // Camera
+      camera = new THREE.PerspectiveCamera(40, container.clientWidth / container.clientHeight, 0.1, 100);
+      camera.position.set(3.8, 1.9, 4.0);
+
+      // Renderer
+      renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: false });
+      renderer.setSize(container.clientWidth, container.clientHeight);
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      renderer.toneMapping = THREE.ACESFilmicToneMapping;
+      renderer.toneMappingExposure = 1.0;
+      renderer.shadowMap.enabled = true;
+      renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+
+      // Environment reflections
+      const pmremGenerator = new THREE.PMREMGenerator(renderer);
+      scene.environment = pmremGenerator.fromScene(new RoomEnvironment(), 0.04).texture;
+
+      // Lighting
+      const hemiLight = new THREE.HemisphereLight(0xffffff, 0x444455, 0.7);
+      scene.add(hemiLight);
+
+      const dirLight = new THREE.DirectionalLight(0xffffff, 1.8);
+      dirLight.position.set(5, 10, 7);
+      dirLight.castShadow = true;
+      dirLight.shadow.mapSize.width = 2048;
+      dirLight.shadow.mapSize.height = 2048;
+      dirLight.shadow.bias = -0.0001;
+      scene.add(dirLight);
+
+      const rimLight1 = new THREE.DirectionalLight(0x70b8ff, 1.5);
+      rimLight1.position.set(-6, 4, -5);
+      scene.add(rimLight1);
+
+      const rimLight2 = new THREE.DirectionalLight(0xffffff, 1.0);
+      rimLight2.position.set(6, 3, -4);
+      scene.add(rimLight2);
+
+      // Floor grid
+      const grid = new THREE.GridHelper(10, 20, 0x334466, 0x161622);
+      grid.position.y = -0.001;
+      scene.add(grid);
+
+      // Controls
+      controls = new OrbitControls(camera, renderer.domElement);
+      controls.enableDamping = true;
+      controls.dampingFactor = 0.05;
+      controls.maxPolarAngle = Math.PI / 2 - 0.02;
+      controls.minDistance = 0.5;
+      controls.maxDistance = 20;
+      controls.target.set(0, 0.45, 0);
+
+      // Highlight Box Helper
+      highlightBox = new THREE.BoxHelper(new THREE.Mesh(), 0x38bdf8);
+      highlightBox.visible = false;
+      scene.add(highlightBox);
+
+      // Resize listener
+      window.addEventListener('resize', onWindowResize);
+
+      // Raycasting for click-to-select
+      setupRaycasting();
+
+      // Load data & model
+      await loadData();
+      await loadModel();
+
+      // UI Listeners
+      setupUI();
+
+      // Render loop
+      animate();
+    }
+
+    function onWindowResize() {
+      camera.aspect = container.clientWidth / container.clientHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(container.clientWidth, container.clientHeight);
+    }
+
+    async function loadData() {
+      try {
+        const [groupsRes, partsRes] = await Promise.all([
+          fetch('/config/groups.json'),
+          fetch('/config/parts.json')
+        ]);
+        if (groupsRes.ok) groupsData = await groupsRes.json();
+        if (partsRes.ok) partsMeta = await partsRes.json();
+      } catch (e) {
+        console.warn('Could not load groups/parts json:', e);
+      }
+    }
+
+    async function loadModel() {
+      const loader = new GLTFLoader();
+      const dracoLoader = new DRACOLoader();
+      dracoLoader.setDecoderPath('/draco/');
+      loader.setDRACOLoader(dracoLoader);
+
+      return new Promise((resolve, reject) => {
+        loader.load(
+          '/models/veyron.glb',
+          (gltf) => {
+            modelRoot = gltf.scene;
+
+            // Calculate original bounding box
+            const bbox = new THREE.Box3().setFromObject(modelRoot);
+            const center = bbox.getCenter(new THREE.Vector3());
+
+            // Center car on origin X & Z, place lowest wheel point at Y = 0
+            modelRoot.position.x = -center.x;
+            modelRoot.position.y = -bbox.min.y;
+            modelRoot.position.z = -center.z;
+
+            // Cache meshes
+            meshesMap.clear();
+
+            // When a node has multiple primitives (e.g. wheel_FL), Three.js groups them.
+            // Map each mesh child, but store reference to part
+            modelRoot.traverse((child) => {
+              if (child.isMesh) {
+                child.castShadow = true;
+                child.receiveShadow = true;
+                meshesMap.set(child.name, child);
+              }
+            });
+
+            scene.add(modelRoot);
+
+            // Hide loading
+            const overlay = document.getElementById('loading-overlay');
+            if (overlay) {
+              overlay.style.opacity = '0';
+              setTimeout(() => overlay.remove(), 400);
+            }
+
+            console.log(`Loaded ${meshesMap.size} meshes into scene.`);
+            updateGroupCounts();
+            updateHUD();
+            buildPartsList();
+            resolve();
+          },
+          (xhr) => {
+            if (xhr.lengthComputable) {
+              const pct = Math.round((xhr.loaded / xhr.total) * 100);
+              const textEl = document.getElementById('loading-text');
+              if (textEl) textEl.innerText = `Loading Veyron Model... ${pct}%`;
+            }
+          },
+          (err) => {
+            console.error('Error loading GLTF:', err);
+            const textEl = document.getElementById('loading-text');
+            if (textEl) textEl.innerText = 'Failed to load model. Check console.';
+            reject(err);
+          }
+        );
+      });
+    }
+
+    function setupRaycasting() {
+      const raycaster = new THREE.Raycaster();
+      const mouse = new THREE.Vector2();
+
+      let downTime = 0;
+      let downPos = { x: 0, y: 0 };
+
+      canvas.addEventListener('pointerdown', (e) => {
+        downTime = performance.now();
+        downPos = { x: e.clientX, y: e.clientY };
+      });
+
+      canvas.addEventListener('pointerup', (e) => {
+        const dist = Math.hypot(e.clientX - downPos.x, e.clientY - downPos.y);
+        const duration = performance.now() - downTime;
+        // Ignore drag / orbit rotations
+        if (dist > 5 || duration > 350) return;
+
+        const rect = canvas.getBoundingClientRect();
+        mouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+        mouse.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+
+        raycaster.setFromCamera(mouse, camera);
+
+        const visibleMeshes = Array.from(meshesMap.values()).filter(m => m.visible);
+        const intersects = raycaster.intersectObjects(visibleMeshes, false);
+
+        if (intersects.length > 0) {
+          selectMesh(intersects[0].object);
+        } else {
+          deselectMesh();
+        }
+      });
+    }
+
+    function selectMesh(mesh) {
+      if (!mesh) return;
+      selectedMesh = mesh;
+
+      // Update highlight helper
+      highlightBox.setFromObject(mesh);
+      highlightBox.visible = true;
+
+      // Update inspector card
+      document.getElementById('card-placeholder').style.display = 'none';
+      document.getElementById('card-props').style.display = 'block';
+
+      const parentName = mesh.parent && mesh.parent !== modelRoot ? mesh.parent.name : null;
+      document.getElementById('card-part-name').innerText = mesh.name + (parentName ? ` (${parentName})` : '');
+
+      const groupInfo = getGroupInfo(mesh.name, parentName);
+      const confBadge = document.getElementById('card-confidence');
+      confBadge.style.display = 'inline-block';
+      confBadge.innerText = groupInfo.confidence || 'low';
+      confBadge.style.background = groupInfo.confidence === 'high' ? 'rgba(34, 197, 94, 0.2)' : 'rgba(234, 179, 8, 0.2)';
+      confBadge.style.color = groupInfo.confidence === 'high' ? '#4ade80' : '#facc15';
+      confBadge.style.borderColor = groupInfo.confidence === 'high' ? 'rgba(34, 197, 94, 0.4)' : 'rgba(234, 179, 8, 0.4)';
+
+      document.getElementById('card-group-select').value = groupInfo.group || 'misc';
+      document.getElementById('card-reason').innerText = groupInfo.reason || 'None';
+
+      // Meta info from parts.json or geometry
+      const cleanName = mesh.name.replace(/\./g, '');
+      const meta = partsMeta.find(p => p.name === mesh.name || p.name.replace(/\./g, '') === cleanName);
+      if (meta) {
+        document.getElementById('card-triangles').innerText = Number(meta.triangles).toLocaleString();
+        document.getElementById('card-size').innerText = `${meta.size[0].toFixed(3)} × ${meta.size[1].toFixed(3)} × ${meta.size[2].toFixed(3)}`;
+        document.getElementById('card-center').innerText = `${meta.center[0].toFixed(3)}, ${meta.center[1].toFixed(3)}, ${meta.center[2].toFixed(3)}`;
+        document.getElementById('card-materials').innerText = meta.materials.join(', ') || 'Default';
+      } else {
+        const geom = mesh.geometry;
+        const triCount = geom.index ? geom.index.count / 3 : geom.attributes.position.count / 3;
+        document.getElementById('card-triangles').innerText = Math.round(triCount).toLocaleString();
+        const bbox = new THREE.Box3().setFromObject(mesh);
+        const sz = bbox.getSize(new THREE.Vector3());
+        const ct = bbox.getCenter(new THREE.Vector3());
+        document.getElementById('card-size').innerText = `${sz.x.toFixed(3)} × ${sz.y.toFixed(3)} × ${sz.z.toFixed(3)}`;
+        document.getElementById('card-center').innerText = `${ct.x.toFixed(3)}, ${ct.y.toFixed(3)}, ${ct.z.toFixed(3)}`;
+        document.getElementById('card-materials').innerText = Array.isArray(mesh.material) ? mesh.material.map(m => m.name).join(', ') : (mesh.material?.name || 'Default');
+      }
+
+      // Scroll sidebar item into view
+      const itemEl = document.querySelector(`.part-item[data-name="${mesh.name}"]`);
+      if (itemEl) {
+        document.querySelectorAll('.part-item.selected').forEach(el => el.classList.remove('selected'));
+        itemEl.classList.add('selected');
+        itemEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }
+    }
+
+    function deselectMesh() {
+      selectedMesh = null;
+      highlightBox.visible = false;
+      document.getElementById('card-placeholder').style.display = 'block';
+      document.getElementById('card-props').style.display = 'none';
+      document.getElementById('card-part-name').innerText = 'No part selected';
+      document.getElementById('card-confidence').style.display = 'none';
+      document.querySelectorAll('.part-item.selected').forEach(el => el.classList.remove('selected'));
+    }
+
+    function updateGroupCounts() {
+      const counts = {
+        all: meshesMap.size,
+        body_panels: 0,
+        glass_and_lights: 0,
+        interior: 0,
+        mechanical: 0,
+        brakes: 0,
+        wheels: 0,
+        misc: 0
+      };
+
+      for (const [name, mesh] of meshesMap.entries()) {
+        const parentName = mesh.parent && mesh.parent !== modelRoot ? mesh.parent.name : null;
+        const gInfo = getGroupInfo(name, parentName);
+        if (counts[gInfo.group] !== undefined) {
+          counts[gInfo.group]++;
+        } else {
+          counts.misc++;
+        }
+      }
+
+      for (const [key, count] of Object.entries(counts)) {
+        const el = document.getElementById(`count-${key}`);
+        if (el) el.innerText = count;
+      }
+    }
+
+    function buildPartsList() {
+      const container = document.getElementById('parts-list');
+      container.innerHTML = '';
+
+      const query = document.getElementById('search-input').value.toLowerCase().trim();
+      const activeChip = document.querySelector('.group-chip.active');
+      const activeGroup = activeChip ? activeChip.dataset.group : 'all';
+
+      const sortedNames = Array.from(meshesMap.keys()).sort();
+
+      let visibleCount = 0;
+
+      for (const name of sortedNames) {
+        const mesh = meshesMap.get(name);
+        const parentName = mesh.parent && mesh.parent !== modelRoot ? mesh.parent.name : null;
+        const groupInfo = getGroupInfo(name, parentName);
+        const cleanName = name.replace(/\./g, '');
+        const meta = partsMeta.find(p => p.name === name || p.name.replace(/\./g, '') === cleanName);
+        const mats = meta ? meta.materials.join(' ').toLowerCase() : '';
+
+        // Filter by group
+        if (activeGroup !== 'all' && groupInfo.group !== activeGroup) {
+          continue;
+        }
+
+        // Filter by search
+        if (query && !name.toLowerCase().includes(query) && !groupInfo.group.toLowerCase().includes(query) && !mats.includes(query)) {
+          continue;
+        }
+
+        visibleCount++;
+
+        const row = document.createElement('div');
+        row.className = `part-item ${selectedMesh === mesh ? 'selected' : ''}`;
+        row.dataset.name = name;
+
+        const checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.checked = mesh.visible;
+        checkbox.title = 'Toggle visibility';
+        checkbox.addEventListener('click', (e) => {
+          e.stopPropagation();
+          mesh.visible = checkbox.checked;
+          if (!mesh.visible && selectedMesh === mesh) {
+            deselectMesh();
+          }
+          updateHUD();
+        });
+
+        const nameSpan = document.createElement('span');
+        nameSpan.className = 'part-name';
+        nameSpan.innerText = name;
+        nameSpan.title = name + (parentName ? ` (Parent: ${parentName})` : '');
+
+        const groupTag = document.createElement('span');
+        groupTag.className = `part-group-tag tag-${groupInfo.group}`;
+        groupTag.innerText = groupInfo.group.replace(/_/g, ' ');
+
+        row.appendChild(checkbox);
+        row.appendChild(nameSpan);
+        row.appendChild(groupTag);
+
+        row.addEventListener('click', () => {
+          selectMesh(mesh);
+        });
+
+        container.appendChild(row);
+      }
+
+      document.getElementById('parts-counter').innerText = `${visibleCount} / ${meshesMap.size} Parts`;
+    }
+
+    function updateHUD() {
+      document.getElementById('hud-total-meshes').innerText = meshesMap.size;
+      const visibleCount = Array.from(meshesMap.values()).filter(m => m.visible).length;
+      document.getElementById('hud-visible-meshes').innerText = visibleCount;
+    }
+
+    function setupUI() {
+      // Search
+      document.getElementById('search-input').addEventListener('input', () => {
+        buildPartsList();
+      });
+
+      // Filter chips
+      document.querySelectorAll('.group-chip').forEach(chip => {
+        chip.addEventListener('click', () => {
+          document.querySelectorAll('.group-chip').forEach(c => c.classList.remove('active'));
+          chip.classList.add('active');
+          buildPartsList();
+        });
+      });
+
+      // Show All
+      document.getElementById('btn-show-all').addEventListener('click', () => {
+        meshesMap.forEach(mesh => {
+          mesh.visible = true;
+        });
+        document.querySelectorAll('#parts-list input[type="checkbox"]').forEach(cb => cb.checked = true);
+        updateHUD();
+      });
+
+      // Hide Others
+      document.getElementById('btn-hide-others').addEventListener('click', () => {
+        if (!selectedMesh) return;
+        meshesMap.forEach(mesh => {
+          mesh.visible = (mesh === selectedMesh);
+        });
+        document.querySelectorAll('#parts-list input[type="checkbox"]').forEach(cb => {
+          const partRow = cb.closest('.part-item');
+          cb.checked = (partRow && partRow.dataset.name === selectedMesh.name);
+        });
+        updateHUD();
+      });
+
+      // Solo active group
+      document.getElementById('btn-isolate-group').addEventListener('click', () => {
+        const activeChip = document.querySelector('.group-chip.active');
+        const targetGroup = (activeChip && activeChip.dataset.group !== 'all') ? activeChip.dataset.group : (selectedMesh ? getGroupInfo(selectedMesh.name, selectedMesh.parent?.name).group : null);
+        if (!targetGroup) return;
+
+        meshesMap.forEach((mesh, name) => {
+          const parentName = mesh.parent && mesh.parent !== modelRoot ? mesh.parent.name : null;
+          const gInfo = getGroupInfo(name, parentName);
+          mesh.visible = (gInfo.group === targetGroup);
+        });
+        buildPartsList();
+        updateHUD();
+      });
+
+      // Reset Camera
+      document.getElementById('btn-reset-cam').addEventListener('click', () => {
+        camera.position.set(3.8, 1.9, 4.0);
+        controls.target.set(0, 0.45, 0);
+        controls.update();
+      });
+
+      // Change assigned group
+      document.getElementById('card-group-select').addEventListener('change', (e) => {
+        if (!selectedMesh) return;
+        const newGroup = e.target.value;
+        const parentName = selectedMesh.parent && selectedMesh.parent !== modelRoot ? selectedMesh.parent.name : null;
+
+        const updateRecord = { group: newGroup, confidence: 'high', reason: 'manually assigned in inspector' };
+        groupsData[selectedMesh.name] = updateRecord;
+        groupsData[selectedMesh.name.replace(/\./g, '')] = updateRecord;
+        if (parentName) {
+          groupsData[parentName] = updateRecord;
+          groupsData[parentName.replace(/\./g, '')] = updateRecord;
+        }
+
+        updateGroupCounts();
+        buildPartsList();
+      });
+
+      // Export groups.json
+      document.getElementById('btn-export-groups').addEventListener('click', () => {
+        // Build clean export object
+        const exportObj = {};
+        for (const [key, val] of Object.entries(groupsData)) {
+          exportObj[key] = val;
+        }
+        const jsonStr = JSON.stringify(exportObj, null, 2);
+        const blob = new Blob([jsonStr], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'groups.json';
+        a.click();
+        URL.revokeObjectURL(url);
+      });
+    }
+
+    function animate() {
+      requestAnimationFrame(animate);
+      controls.update();
+      if (highlightBox && highlightBox.visible && selectedMesh) {
+        highlightBox.setFromObject(selectedMesh);
+      }
+      renderer.render(scene, camera);
+    }
+
+    init();
+  </script>
+</body>
+</html>
