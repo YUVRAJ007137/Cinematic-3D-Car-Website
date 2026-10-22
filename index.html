@@ -3,31 +3,167 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Veyron — A Cinematic Study</title>
+  <title>Bugatti Chiron Pur Sport — A Cinematic 3D Study</title>
+  <meta name="description" content="An interactive, cinematic scroll-driven 3D exploration of the Bugatti Chiron Pur Sport featuring real-time exploded layer architecture, PBR shaders, and computational aerodynamics.">
+
+  <!-- Preconnect & Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    html, body {
-      background: #050507;
-      color: #fff;
-      font-family: 'Inter', sans-serif;
-      overflow-x: hidden;
-    }
-    #webgl-canvas {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      z-index: 1;
-      pointer-events: auto;
-    }
-  </style>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;900&family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="/src/style.css">
 </head>
 <body>
-  <canvas id="webgl-canvas"></canvas>
+  <!-- Real Loading Screen -->
+  <div id="loading-screen" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+    <div class="loader-content">
+      <div class="brand-monogram">PUR SPORT</div>
+      <div class="loader-title">CINEMATIC 3D STUDY</div>
+      <div class="loader-bar-track">
+        <div id="loader-bar-fill" class="loader-bar-fill"></div>
+      </div>
+      <div class="loader-status">
+        <span id="loader-percent">0%</span>
+        <span class="loader-note">Compiling shaders & geometry...</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- WebGL Fallback Screen (PRD Section 10) -->
+  <noscript>
+    <div class="fallback-screen">
+      <h1>CHIRON PUR SPORT</h1>
+      <p>JavaScript and WebGL 2.0 are required to experience this cinematic real-time 3D study.</p>
+    </div>
+  </noscript>
+  <div id="webgl-error-fallback" class="fallback-screen" style="display: none;">
+    <h1>GRAPHICS HARDWARE REQUIRED</h1>
+    <p>WebGL 2.0 could not be initialized on your device. Please ensure hardware acceleration is enabled.</p>
+  </div>
+
+  <!-- Letterbox Bars (Hero Chapter) -->
+  <div id="letterbox-top" class="letterbox"></div>
+  <div id="letterbox-bottom" class="letterbox"></div>
+
+  <!-- Master Fixed WebGL Canvas -->
+  <canvas id="webgl-canvas" aria-label="Interactive 3D Chiron Pur Sport Viewport"></canvas>
+
+  <!-- SVG Leader Lines Overlay -->
+  <svg id="leader-line-svg" class="leader-svg" aria-hidden="true">
+    <defs>
+      <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+        <feGaussianBlur stdDeviation="3" result="blur" />
+        <feMerge>
+          <feMergeNode in="blur" />
+          <feMergeNode in="SourceGraphic" />
+        </feMerge>
+      </filter>
+    </defs>
+    <path id="leader-path" class="leader-path" d="" filter="url(#glow)"></path>
+    <circle id="leader-dot" class="leader-dot" r="4" cx="0" cy="0"></circle>
+  </svg>
+
+  <!-- Side Navigation Dots (Keyboard Accessible) -->
+  <nav class="chapter-nav" aria-label="Chapter navigation">
+    <button class="chapter-dot active" data-index="0" aria-label="Chapter 1: Hero Reveal" title="Hero Reveal"></button>
+    <button class="chapter-dot" data-index="1" aria-label="Chapter 2: Exterior Orbit" title="Exterior Orbit"></button>
+    <button class="chapter-dot" data-index="2" aria-label="Chapter 3: Exploded Architecture" title="Exploded Architecture"></button>
+    <button class="chapter-dot" data-index="3" aria-label="Chapter 4: Reassembly" title="Reassembly"></button>
+    <button class="chapter-dot" data-index="4" aria-label="Chapter 5: Detail Precision" title="Detail Precision"></button>
+    <button class="chapter-dot" data-index="5" aria-label="Chapter 6: Specifications & Config" title="Specifications & Config"></button>
+  </nav>
+
+  <!-- HTML Overlays -->
+  <!-- 1. Hero Reveal Section -->
+  <section id="hero-section" class="overlay-section hero-overlay" aria-label="Hero Title">
+    <div class="hero-eyebrow">A CINEMATIC STUDY — FAN PORTFOLIO</div>
+    <h1 class="hero-title">CHIRON</h1>
+    <div class="hero-subtitle">PUR SPORT</div>
+    <div class="hero-metrics">
+      <span>1,500 PS</span>
+      <span class="divider">/</span>
+      <span>1,600 NM</span>
+      <span class="divider">/</span>
+      <span>350 KM/H</span>
+    </div>
+    <div class="scroll-indicator" aria-hidden="true">
+      <div class="mouse-icon">
+        <div class="wheel-dot"></div>
+      </div>
+      <span class="scroll-text">SCROLL TO IGNITE</span>
+    </div>
+  </section>
+
+  <!-- 2. Exterior Headline Stats Section -->
+  <section id="exterior-stats" class="overlay-section exterior-overlay" aria-label="Vehicle Highlights">
+    <div class="stat-card">
+      <div class="stat-label">POWERTRAIN ARCHITECTURE</div>
+      <div class="stat-value">8.0L W16</div>
+      <div class="stat-desc">Quad-turbocharged mid-engine layout delivering relentless linear thrust.</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">CALIBRATED PEAK OUTPUT</div>
+      <div class="stat-value">1,500 PS</div>
+      <div class="stat-desc">Close-ratio gearbox engineered specifically for explosive lateral dynamics.</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">AERODYNAMIC DOWNFORCE</div>
+      <div class="stat-value">1.90 M</div>
+      <div class="stat-desc">Fixed high-mount carbon rear wing producing unmatched high-speed corner grip.</div>
+    </div>
+  </section>
+
+  <!-- 3. Exploded Architecture Callout Card -->
+  <div id="callout-card" class="callout-card" role="region" aria-live="polite" aria-label="Component specifications">
+    <div id="callout-badge" class="callout-badge">LAYER 01</div>
+    <h2 id="callout-title" class="callout-title">Aerodynamic Monocoque</h2>
+    <div class="callout-stat-group">
+      <div id="callout-stat-val" class="callout-stat-val">1.9 M²</div>
+      <div id="callout-stat-lbl" class="callout-stat-lbl">Active Downforce Surface</div>
+    </div>
+    <p id="callout-desc" class="callout-desc">Sculpted carbon-composite exterior tailored for peak aerodynamic stability.</p>
+  </div>
+
+  <!-- 4. Detail Focus Section -->
+  <section id="details-section" class="overlay-section details-overlay" aria-label="Detailed Craftsmanship">
+    <div class="detail-card">
+      <div id="detail-subtitle" class="detail-subtitle">OPTICAL PRECISION</div>
+      <h2 id="detail-title" class="detail-title">QUAD-MATRIX LIGHTING</h2>
+      <p id="detail-desc" class="detail-desc">Four compact LED projector modules per cluster with sculpted heat-extraction louvers.</p>
+    </div>
+  </section>
+
+  <!-- 5. CTA & Spec Closer Section -->
+  <section id="cta-section" class="overlay-section cta-overlay" aria-label="Explore & Configure">
+    <div class="cta-inner">
+      <div class="cta-tag">THE PINNACLE OF HYPER-ENGINEERING</div>
+      <h2 class="cta-title">SCULPTED FOR VELOCITY</h2>
+      <p class="cta-sub">Explore the intersection of high-downforce computational physics and handcrafted luxury.</p>
+
+      <!-- Paint Finish Configurator -->
+      <div class="color-picker-wrap">
+        <span class="picker-label">FINISH SPECIFICATION:</span>
+        <div class="swatches-row">
+          <button class="paint-swatch active" data-color="deep_rosso" style="--swatch-color: #b91c1c;" title="Deep Rosso" aria-label="Deep Rosso Paint"></button>
+          <button class="paint-swatch" data-color="racing_blue" style="--swatch-color: #1d4ed8;" title="French Racing Blue" aria-label="French Racing Blue Paint"></button>
+          <button class="paint-swatch" data-color="stealth_noir" style="--swatch-color: #18181b;" title="Stealth Noir" aria-label="Stealth Noir Paint"></button>
+          <button class="paint-swatch" data-color="liquid_silver" style="--swatch-color: #d1d5db;" title="Liquid Silver" aria-label="Liquid Silver Paint"></button>
+        </div>
+      </div>
+
+      <div class="cta-actions">
+        <a id="btn-primary-cta" href="#specs-modal" class="btn-cta btn-cta-primary">EXPLORE SPECIFICATIONS</a>
+      </div>
+
+      <footer class="site-footer">
+        <p class="disclaimer">Fan-made concept. Not affiliated with, endorsed by, or sponsored by Bugatti Automobiles S.A.S. or any automobile manufacturer. 3D model credit: 3D Artist via CGTrader.</p>
+      </footer>
+    </div>
+  </section>
+
+  <!-- 1000vh Scroll Height Container -->
+  <div id="scroll-container" class="scroll-container"></div>
+
   <script type="module" src="/src/main.js"></script>
 </body>
 </html>
