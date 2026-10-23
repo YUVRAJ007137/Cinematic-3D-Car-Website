@@ -24,7 +24,7 @@ export const CONFIG = {
       metalness: 0.88,
       roughness: 0.16,
       clearcoat: 1.0,
-      clearcoatRoughness: 0.08,
+      clearcoatRoughness: 0.14,
       accentHex: "#ef4444"
     },
     racing_blue: {
@@ -33,7 +33,7 @@ export const CONFIG = {
       metalness: 0.85,
       roughness: 0.18,
       clearcoat: 1.0,
-      clearcoatRoughness: 0.09,
+      clearcoatRoughness: 0.14,
       accentHex: "#3b82f6"
     },
     stealth_noir: {
@@ -42,7 +42,7 @@ export const CONFIG = {
       metalness: 0.75,
       roughness: 0.28,
       clearcoat: 0.9,
-      clearcoatRoughness: 0.18,
+      clearcoatRoughness: 0.20,
       accentHex: "#38bdf8"
     },
     liquid_silver: {
@@ -51,7 +51,7 @@ export const CONFIG = {
       metalness: 0.98,
       roughness: 0.14,
       clearcoat: 1.0,
-      clearcoatRoughness: 0.05,
+      clearcoatRoughness: 0.12,
       accentHex: "#94a3b8"
     }
   },

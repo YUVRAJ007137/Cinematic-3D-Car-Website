@@ -128,26 +128,41 @@ async function main() {
     isTabVisible = !document.hidden;
   });
 
-  // Idle subtle camera sway when stationary
-  let idleTime = 0;
+  // Pre-allocated vectors for camera sway — no per-frame allocation
+  const swayOffset = new THREE.Vector3();
+  let elapsed = 0;
+
+  // Find particle material for animation
+  let particleMaterial = null;
+  scene.traverse((child) => {
+    if (child.userData.particleMaterial) {
+      particleMaterial = child.userData.particleMaterial;
+    }
+  });
 
   function renderLoop(now) {
     requestAnimationFrame(renderLoop);
-
     if (!isTabVisible) return;
+
+    const dt = 0.016; // ~60fps delta
+    elapsed += dt;
 
     // Monitor FPS & adapt quality
     monitorQuality(now);
 
-    // Subtle breathing camera drift
-    idleTime += 0.008;
-    const swayX = Math.sin(idleTime) * 0.015;
-    const swayY = Math.cos(idleTime * 0.7) * 0.008;
-    camera.position.x += swayX;
-    camera.position.y += swayY;
+    // Animate atmospheric dust particles
+    if (particleMaterial) {
+      particleMaterial.uniforms.uTime.value = elapsed;
+    }
+
+    // Subtle breathing camera sway — applied temporarily, not accumulated
+    const swayX = Math.sin(elapsed * 0.5) * 0.012;
+    const swayY = Math.cos(elapsed * 0.35) * 0.006;
+    swayOffset.set(swayX, swayY, 0);
+
+    camera.position.add(swayOffset);
     camera.lookAt(cameraTarget);
-    camera.position.x -= swayX;
-    camera.position.y -= swayY;
+    camera.position.sub(swayOffset);
 
     // Render post-processing chain
     composer.render();

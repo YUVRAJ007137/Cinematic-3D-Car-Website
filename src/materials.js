@@ -23,7 +23,8 @@ export function setupMaterials(modelRoot, groupsData) {
     clearcoat: defaultPaint.clearcoat,
     clearcoatRoughness: defaultPaint.clearcoatRoughness,
     reflectivity: 1.0,
-    envMapIntensity: 1.8
+    envMapIntensity: 2.0,
+    ior: 1.5
   });
 
   // Carbon Fiber / Dark Accent Material
@@ -38,29 +39,30 @@ export function setupMaterials(modelRoot, groupsData) {
 
   // Aero / Tinted Glass Material (cheap & crisp, no transmission lag)
   const glassMaterial = new THREE.MeshPhysicalMaterial({
-    color: new THREE.Color(0x0a101d),
+    color: new THREE.Color(0x0c1428),
     metalness: 0.1,
-    roughness: 0.05,
+    roughness: 0.04,
     transmission: 0.0,
     transparent: true,
-    opacity: 0.42,
+    opacity: 0.38,
     depthWrite: false,
-    envMapIntensity: 2.2
+    envMapIntensity: 2.5,
+    ior: 1.52
   });
 
   // Headlamp Matrix Glow Material (Bloom ready)
   const headlampGlowMaterial = new THREE.MeshStandardMaterial({
-    color: new THREE.Color(0xffffff),
-    emissive: new THREE.Color(0xdbeafe),
-    emissiveIntensity: 4.5,
+    color: new THREE.Color(0xeef4ff),
+    emissive: new THREE.Color(0xc8deff),
+    emissiveIntensity: 3.2,
     toneMapped: false
   });
 
   // Tail Lamp LED Blade Material (Vibrant Red Bloom)
   const tailLampGlowMaterial = new THREE.MeshStandardMaterial({
-    color: new THREE.Color(0x220000),
-    emissive: new THREE.Color(0xff1818),
-    emissiveIntensity: 5.0,
+    color: new THREE.Color(0x1a0000),
+    emissive: new THREE.Color(0xff2020),
+    emissiveIntensity: 3.5,
     toneMapped: false
   });
 
