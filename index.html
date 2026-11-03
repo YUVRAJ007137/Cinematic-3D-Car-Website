@@ -48,6 +48,12 @@
   <!-- Master Fixed WebGL Canvas -->
   <canvas id="webgl-canvas" aria-label="Interactive 3D Chiron Pur Sport Viewport"></canvas>
 
+  <!-- Custom Cursor (Upgrade #5) -->
+  <div id="custom-cursor" class="custom-cursor" aria-hidden="true">
+    <div class="cursor-dot"></div>
+    <div class="cursor-ring"></div>
+  </div>
+
   <!-- SVG Leader Lines Overlay -->
   <svg id="leader-line-svg" class="leader-svg" aria-hidden="true">
     <defs>
@@ -63,8 +69,11 @@
     <circle id="leader-dot" class="leader-dot" r="4" cx="0" cy="0"></circle>
   </svg>
 
-  <!-- Side Navigation Dots (Keyboard Accessible) -->
-  <nav class="chapter-nav" aria-label="Chapter navigation">
+  <!-- Side Navigation Dots with Progress Line (Upgrade #3) -->
+  <nav class="chapter-nav" aria-label="Chapter navigation" style="--scroll-progress: 0;">
+    <div class="chapter-progress-track">
+      <div class="chapter-progress-fill"></div>
+    </div>
     <button class="chapter-dot active" data-index="0" aria-label="Chapter 1: Hero Reveal" title="Hero Reveal"></button>
     <button class="chapter-dot" data-index="1" aria-label="Chapter 2: Exterior Orbit" title="Exterior Orbit"></button>
     <button class="chapter-dot" data-index="2" aria-label="Chapter 3: Exploded Architecture" title="Exploded Architecture"></button>
@@ -72,6 +81,18 @@
     <button class="chapter-dot" data-index="4" aria-label="Chapter 5: Detail Precision" title="Detail Precision"></button>
     <button class="chapter-dot" data-index="5" aria-label="Chapter 6: Specifications & Config" title="Specifications & Config"></button>
   </nav>
+
+  <!-- Day/Night Toggle (Upgrade #7) -->
+  <button id="day-night-toggle" class="day-night-toggle" aria-label="Toggle day/night mode" title="Toggle Day/Night">
+    <span class="toggle-icon toggle-icon--sun">☀</span>
+    <span class="toggle-icon toggle-icon--moon">🌙</span>
+  </button>
+
+  <!-- Scroll Velocity Indicator (Upgrade #4) -->
+  <div id="scroll-velocity-bar" class="scroll-velocity-bar" aria-hidden="true"></div>
+
+  <!-- Hotspot Annotations Container (Upgrade #10) -->
+  <div id="hotspot-container" class="hotspot-container" aria-hidden="true"></div>
 
   <!-- HTML Overlays -->
   <!-- 1. Hero Reveal Section -->
@@ -124,6 +145,13 @@
     <p id="callout-desc" class="callout-desc">Sculpted carbon-composite exterior tailored for peak aerodynamic stability.</p>
   </div>
 
+  <!-- X-Ray / Transparency Slider (Upgrade #9) -->
+  <div id="xray-slider-wrap" class="xray-slider-wrap" aria-label="X-Ray transparency control">
+    <span class="xray-label xray-label--solid">SOLID</span>
+    <input id="xray-slider" type="range" min="0" max="100" value="0" class="xray-slider" aria-label="X-Ray transparency">
+    <span class="xray-label xray-label--xray">X-RAY</span>
+  </div>
+
   <!-- 4. Detail Focus Section -->
   <section id="details-section" class="overlay-section details-overlay" aria-label="Detailed Craftsmanship">
     <div class="detail-card">
@@ -135,31 +163,180 @@
 
   <!-- 5. CTA & Spec Closer Section -->
   <section id="cta-section" class="overlay-section cta-overlay" aria-label="Explore & Configure">
-    <div class="cta-inner">
+    <!-- Top Header Ribbon -->
+    <div class="cta-top-ribbon">
       <div class="cta-tag">THE PINNACLE OF HYPER-ENGINEERING</div>
-      <h2 class="cta-title">SCULPTED FOR VELOCITY</h2>
-      <p class="cta-sub">Explore the intersection of high-downforce computational physics and handcrafted luxury.</p>
+      <h2 class="cta-headline">CHIRON PUR SPORT</h2>
+    </div>
 
-      <!-- Paint Finish Configurator -->
-      <div class="color-picker-wrap">
-        <span class="picker-label">FINISH SPECIFICATION:</span>
+    <!-- Center Drag to Orbit Floating Hint -->
+    <div id="drag-hint" class="drag-hint" aria-hidden="true">
+      <span class="drag-hint-icon">↔</span>
+      <span class="drag-hint-text">DRAG TO ROTATE 360°</span>
+    </div>
+
+    <!-- Floating Luxury Configurator Bottom Dock -->
+    <div class="configurator-dock">
+      <!-- Color Finishes -->
+      <div class="dock-section">
+        <span class="dock-label">PAINT FINISH</span>
         <div class="swatches-row">
           <button class="paint-swatch active" data-color="deep_rosso" style="--swatch-color: #b91c1c;" title="Deep Rosso" aria-label="Deep Rosso Paint"></button>
           <button class="paint-swatch" data-color="racing_blue" style="--swatch-color: #1d4ed8;" title="French Racing Blue" aria-label="French Racing Blue Paint"></button>
           <button class="paint-swatch" data-color="stealth_noir" style="--swatch-color: #18181b;" title="Stealth Noir" aria-label="Stealth Noir Paint"></button>
           <button class="paint-swatch" data-color="liquid_silver" style="--swatch-color: #d1d5db;" title="Liquid Silver" aria-label="Liquid Silver Paint"></button>
+          <button class="paint-swatch" data-color="iridescent_pearl" style="--swatch-color: linear-gradient(135deg, #e0e7ff, #fbcfe8, #e0f2fe);" title="Iridescent Pearl" aria-label="Iridescent Pearl Paint"></button>
         </div>
       </div>
 
-      <div class="cta-actions">
-        <a id="btn-primary-cta" href="#specs-modal" class="btn-cta btn-cta-primary">EXPLORE SPECIFICATIONS</a>
+      <div class="dock-divider"></div>
+
+      <!-- Surface Finish -->
+      <div class="dock-section">
+        <span class="dock-label">SURFACE</span>
+        <div class="finish-toggle-group">
+          <button class="finish-pill active" data-finish="gloss" aria-label="Gloss Finish">GLOSS</button>
+          <button class="finish-pill" data-finish="satin" aria-label="Satin Finish">SATIN</button>
+          <button class="finish-pill" data-finish="matte" aria-label="Matte Finish">MATTE</button>
+        </div>
       </div>
 
-      <footer class="site-footer">
-        <p class="disclaimer">Fan-made concept. Not affiliated with, endorsed by, or sponsored by Bugatti Automobiles S.A.S. or any automobile manufacturer. 3D model credit: 3D Artist via CGTrader.</p>
-      </footer>
+      <div class="dock-divider"></div>
+
+      <!-- Action Button -->
+      <div class="dock-section dock-actions">
+        <button id="btn-open-specs" class="btn-cta btn-cta-primary" aria-haspopup="dialog" aria-controls="specs-modal">EXPLORE SPECIFICATIONS</button>
+      </div>
     </div>
+
+    <!-- Discreet Bottom Footer -->
+    <footer class="dock-footer">
+      <p class="disclaimer">Fan-made non-commercial portfolio concept. Not affiliated with Bugatti Automobiles S.A.S. 3D Model: CGTrader.</p>
+    </footer>
   </section>
+
+  <!-- Technical Specifications Modal -->
+  <div id="specs-modal" class="specs-modal" role="dialog" aria-modal="true" aria-labelledby="specs-modal-title" style="display: none;">
+    <div class="specs-modal-backdrop" id="specs-modal-backdrop"></div>
+    <div class="specs-modal-card">
+      <button id="btn-close-specs" class="specs-modal-close" aria-label="Close specifications dialog">✕</button>
+      <div class="specs-modal-header">
+        <div class="specs-modal-tag">CHIRON PUR SPORT // TECHNICAL DATA</div>
+        <h2 id="specs-modal-title" class="specs-modal-title">SPECIFICATIONS & ENGINEERING</h2>
+        <p class="specs-modal-sub">Artistic engineering breakdown of computational aerodynamics, quad-turbocharged architecture, and lightweight carbon composites.</p>
+      </div>
+
+      <div class="specs-grid">
+        <!-- 1. Powertrain -->
+        <div class="spec-panel">
+          <div class="spec-panel-icon">⚡</div>
+          <h3 class="spec-panel-title">POWERTRAIN & OUTPUT</h3>
+          <div class="spec-row">
+            <span class="spec-key">Engine Architecture</span>
+            <span class="spec-val">8.0L Quad-Turbocharged W16</span>
+          </div>
+          <div class="spec-row">
+            <span class="spec-key">Peak Power</span>
+            <span class="spec-val">1,500 PS (1,103 kW) @ 6,900 RPM</span>
+          </div>
+          <div class="spec-row">
+            <span class="spec-key">Maximum Torque</span>
+            <span class="spec-val">1,600 Nm @ 2,000 – 6,000 RPM</span>
+          </div>
+          <div class="spec-row">
+            <span class="spec-key">Transmission</span>
+            <span class="spec-val">7-Speed Dual-Clutch Close-Ratio DSG</span>
+          </div>
+          <div class="spec-row">
+            <span class="spec-key">Drivetrain</span>
+            <span class="spec-val">Permanent All-Wheel Drive with Torque Vectoring</span>
+          </div>
+        </div>
+
+        <!-- 2. Performance & Dynamics -->
+        <div class="spec-panel">
+          <div class="spec-panel-icon">⏱</div>
+          <h3 class="spec-panel-title">PERFORMANCE METRICS</h3>
+          <div class="spec-row">
+            <span class="spec-key">Acceleration 0 — 100 km/h</span>
+            <span class="spec-val highlight">2.3 Seconds</span>
+          </div>
+          <div class="spec-row">
+            <span class="spec-key">Acceleration 0 — 200 km/h</span>
+            <span class="spec-val">5.5 Seconds</span>
+          </div>
+          <div class="spec-row">
+            <span class="spec-key">Elasticity 60 — 120 km/h (6th)</span>
+            <span class="spec-val">4.4 Seconds</span>
+          </div>
+          <div class="spec-row">
+            <span class="spec-key">Top Track Speed</span>
+            <span class="spec-val">350 km/h (217 mph)</span>
+          </div>
+          <div class="spec-row">
+            <span class="spec-key">Lateral Acceleration</span>
+            <span class="spec-val">Up to 1.6 g</span>
+          </div>
+        </div>
+
+        <!-- 3. Aerodynamics & Chassis -->
+        <div class="spec-panel">
+          <div class="spec-panel-icon">💨</div>
+          <h3 class="spec-panel-title">AERODYNAMICS & CHASSIS</h3>
+          <div class="spec-row">
+            <span class="spec-key">Rear Wing</span>
+            <span class="spec-val">1.90m Fixed Carbon Composite Wing</span>
+          </div>
+          <div class="spec-row">
+            <span class="spec-key">Aerodynamic Balance</span>
+            <span class="spec-val">Enlarged Horseshoe Air Scoop & Front Splitter</span>
+          </div>
+          <div class="spec-row">
+            <span class="spec-key">Exhaust System</span>
+            <span class="spec-val">Titanium 3D-Printed High-Temperature Tips</span>
+          </div>
+          <div class="spec-row">
+            <span class="spec-key">Suspension</span>
+            <span class="spec-val">+65% Front / +33% Rear Spring Stiffness</span>
+          </div>
+          <div class="spec-row">
+            <span class="spec-key">Chassis Camber</span>
+            <span class="spec-val">-2.5° Negative Wheel Camber</span>
+          </div>
+        </div>
+
+        <!-- 4. Wheels & Braking -->
+        <div class="spec-panel">
+          <div class="spec-panel-icon">🔘</div>
+          <h3 class="spec-panel-title">WHEELS & BRAKING</h3>
+          <div class="spec-row">
+            <span class="spec-key">Rims</span>
+            <span class="spec-val">Forged Magnesium Aero-Blade Wheels</span>
+          </div>
+          <div class="spec-row">
+            <span class="spec-key">Unsprung Mass Reduction</span>
+            <span class="spec-val highlight">-16 kg (Wheels & Brake Backing)</span>
+          </div>
+          <div class="spec-row">
+            <span class="spec-key">Front Brakes</span>
+            <span class="spec-val">420 mm Carbon-Ceramic / 8-Piston Titanium</span>
+          </div>
+          <div class="spec-row">
+            <span class="spec-key">Rear Brakes</span>
+            <span class="spec-val">400 mm Carbon-Ceramic / 6-Piston Monobloc</span>
+          </div>
+          <div class="spec-row">
+            <span class="spec-key">Tire Specification</span>
+            <span class="spec-val">Michelin Pilot Sport Cup 2R (Bespoke Compound)</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="specs-modal-footer">
+        <p class="specs-disclaimer">Fan-made non-commercial portfolio project. Vehicle specifications represent official engineering study data. Not affiliated with, endorsed by, or sponsored by Bugatti Automobiles S.A.S. or Volkswagen AG.</p>
+      </div>
+    </div>
+  </div>
 
   <!-- 1000vh Scroll Height Container -->
   <div id="scroll-container" class="scroll-container"></div>

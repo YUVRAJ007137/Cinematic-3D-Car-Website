@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { createScene } from './scene.js';
 import { loadCarModel } from './loader.js';
-import { setupMaterials } from './materials.js';
+import { setupMaterials, animateEmissives } from './materials.js';
 import { ExplodeController } from './explode.js';
 import { setupPostProcessing } from './post.js';
 import { OverlayController } from './overlay.js';
@@ -9,6 +9,8 @@ import { TimelineController } from './timeline.js';
 
 /**
  * Cinematic 3D Car Website — Main Orchestrator
+ * Integrates high-end PBR materials, softbox PMREM lighting, planar reflections,
+ * dynamic DoF, interactive 360° orbit, and procedural automotive textures.
  */
 
 async function main() {
@@ -39,7 +41,7 @@ async function main() {
     console.warn('Config fetch warning:', err);
   }
 
-  // 3. Initialize Scene, Lighting, Camera, Ground Reflector
+  // 3. Initialize Scene, Studio Lighting, Camera, Ground Reflector
   const {
     scene,
     camera,
@@ -64,7 +66,6 @@ async function main() {
   let carData;
   try {
     carData = await loadCarModel((pct) => {
-      // Scale load progress to 0-85%
       updateLoaderProgress(pct * 0.85);
     });
   } catch (err) {
@@ -75,14 +76,15 @@ async function main() {
   const { carContainer, root: modelRoot } = carData;
   scene.add(carContainer);
 
-  // 6. Upgraded PBR Materials Pass
+  // 6. Upgraded PBR Materials Pass with Procedural Automotive Shaders
   setupMaterials(modelRoot, groupsData);
 
   // 7. Exploded View Engine
   const explodeController = new ExplodeController(modelRoot, groupsData, explodeConfig);
 
-  // 8. Post-Processing Pipeline
-  const { composer, setSize: postResize, monitorQuality } = setupPostProcessing(renderer, scene, camera);
+  // 8. Post-Processing Pipeline with Dynamic Depth of Field
+  const postController = setupPostProcessing(renderer, scene, camera);
+  const { composer, setSize: postResize, monitorQuality } = postController;
 
   // 9. HTML Overlays & Leader Lines
   const overlayController = new OverlayController(explodeController);
@@ -93,7 +95,10 @@ async function main() {
     cameraTarget,
     lights,
     explodeController,
-    overlayController
+    overlayController,
+    postController,
+    carContainer,
+    canvas
   });
 
   // 11. Wire Chapter Navigation Dots
@@ -109,7 +114,7 @@ async function main() {
   renderer.compile(scene, camera);
   updateLoaderProgress(100);
 
-  // Hide loading screen smoothly
+  // Smoothly reveal showroom
   setTimeout(() => {
     if (loadingScreen) {
       loadingScreen.classList.add('loaded');
@@ -128,7 +133,6 @@ async function main() {
     isTabVisible = !document.hidden;
   });
 
-  // Pre-allocated vectors for camera sway — no per-frame allocation
   const swayOffset = new THREE.Vector3();
   let elapsed = 0;
 
@@ -144,25 +148,33 @@ async function main() {
     requestAnimationFrame(renderLoop);
     if (!isTabVisible) return;
 
-    const dt = 0.016; // ~60fps delta
+    const dt = 0.016;
     elapsed += dt;
 
     // Monitor FPS & adapt quality
     monitorQuality(now);
+
+    // Animate daytime running LED and taillight breathing pulse
+    animateEmissives(elapsed);
 
     // Animate atmospheric dust particles
     if (particleMaterial) {
       particleMaterial.uniforms.uTime.value = elapsed;
     }
 
-    // Subtle breathing camera sway — applied temporarily, not accumulated
-    const swayX = Math.sin(elapsed * 0.5) * 0.012;
-    const swayY = Math.cos(elapsed * 0.35) * 0.006;
-    swayOffset.set(swayX, swayY, 0);
+    // Inertial heavy hydraulic camera dampening — absorbs sudden scrolls & guarantees smooth motion
+    timelineController.updateDampedCamera(dt);
 
-    camera.position.add(swayOffset);
-    camera.lookAt(cameraTarget);
-    camera.position.sub(swayOffset);
+    if (!timelineController.controls || !timelineController.controls.enabled) {
+      // Subtle cinematic breathing camera sway (only when not user-dragging)
+      const swayX = Math.sin(elapsed * 0.5) * 0.008;
+      const swayY = Math.cos(elapsed * 0.35) * 0.004;
+      swayOffset.set(swayX, swayY, 0);
+
+      camera.position.add(swayOffset);
+      camera.lookAt(cameraTarget);
+      camera.position.sub(swayOffset);
+    }
 
     // Render post-processing chain
     composer.render();
@@ -170,8 +182,8 @@ async function main() {
 
   requestAnimationFrame(renderLoop);
 
-  // Initialize first frame at scroll 0
-  timelineController.setProgress(0);
+  // Initialize first frame at scroll 0 immediately
+  timelineController.setProgress(0, true);
 }
 
 // Start application

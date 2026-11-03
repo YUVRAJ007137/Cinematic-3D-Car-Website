@@ -53,6 +53,16 @@ export const CONFIG = {
       clearcoat: 1.0,
       clearcoatRoughness: 0.12,
       accentHex: "#94a3b8"
+    },
+    iridescent_pearl: {
+      name: "Iridescent Pearl",
+      hex: "#e8e0f0",
+      metalness: 0.92,
+      roughness: 0.13,
+      clearcoat: 1.0,
+      clearcoatRoughness: 0.10,
+      accentHex: "#c084fc",
+      pearlescent: true
     }
   },
 

@@ -42,9 +42,9 @@
     "end": 0.72,
     "ease": "power2.out",
     "camera": {
-      "position": [-2.4, 1.6, -1.8],
-      "target": [0.0, 0.45, -0.5],
-      "fov": 36
+      "position": [2.5, 1.45, -0.6],
+      "target": [0.0, 0.48, -0.3],
+      "fov": 34
     }
   },
   "brakes": {

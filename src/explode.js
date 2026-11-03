@@ -3,7 +3,7 @@ import { setGroupFocus } from './materials.js';
 
 /**
  * Data-Driven Exploded View Engine (PRD Sections 7.2 & 7.3)
- * Controls layer expansion, organic seeded jitter, focus effects, and 3D screen projection.
+ * Controls layer expansion, organic seeded jitter, micro-rotation, focus effects, and 3D screen projection.
  */
 
 // Simple deterministic hash for seeded organic jitter
@@ -12,9 +12,14 @@ function pseudoRandom(seed) {
   return x - Math.floor(x);
 }
 
-// Power2 easing function (power2.out)
-function easeOutQuad(t) {
-  return t * (2 - t);
+// Smooth S-curve easing functions: zero initial velocity, zero final velocity
+// Eliminates sudden bursts or jerky kickoffs when parts begin moving
+function easeInOutQuad(t) {
+  return t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
+}
+
+function easeInOutCubic(t) {
+  return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
 }
 
 export class ExplodeController {
@@ -57,6 +62,18 @@ export class ExplodeController {
       // Rest position in model local coordinates
       const restPos = node.userData.restPosition ? node.userData.restPosition.clone() : node.position.clone();
 
+      // Rest quaternion for micro-rotation (store before any animation)
+      const restQuat = node.quaternion.clone();
+
+      // Seeded per-part rotation axis (normalized random vector)
+      const rax = pseudoRandom(seed * 4.9) - 0.5;
+      const ray = pseudoRandom(seed * 5.3) - 0.5;
+      const raz = pseudoRandom(seed * 6.7) - 0.5;
+      const rotAxis = new THREE.Vector3(rax, ray, raz).normalize();
+
+      // Seeded max rotation angle: 2-5° range (0.035 - 0.087 radians)
+      const rotAngle = 0.035 + pseudoRandom(seed * 7.1) * (0.087 - 0.035);
+
       // Determine lateral direction sign: if part is on right side of vehicle centerline, invert X direction
       const worldCenter = node.userData.center || new THREE.Vector3();
       const isRightSide = worldCenter.x < 0.0;
@@ -66,16 +83,23 @@ export class ExplodeController {
         dir[0] = isRightSide ? -Math.abs(dir[0]) : Math.abs(dir[0]);
       }
 
+      // Pre-allocate a scratch quaternion for per-frame rotation to avoid GC pressure
+      const _scratchQuat = new THREE.Quaternion();
+
       this.partRecords.push({
         node,
         name,
         groupKey,
         restPos,
+        restQuat,
         dir: new THREE.Vector3(dir[0], dir[1], dir[2]),
         distance: cfg.distance,
         startProgress: cfg.start,
         endProgress: cfg.end,
-        jitter: new THREE.Vector3(jx, jy, jz)
+        jitter: new THREE.Vector3(jx, jy, jz),
+        rotAxis,
+        rotAngle,
+        _scratchQuat
       });
     });
 
@@ -83,7 +107,7 @@ export class ExplodeController {
   }
 
   /**
-   * Updates exploded parts positions based on local explode chapter progress [0, 1]
+   * Updates exploded parts positions and micro-rotations based on local explode chapter progress [0, 1]
    * Perfectly reversible scrubbing.
    */
   update(explodeProgress) {
@@ -91,7 +115,7 @@ export class ExplodeController {
 
     for (let i = 0; i < this.partRecords.length; i++) {
       const rec = this.partRecords[i];
-      const { node, restPos, dir, distance, startProgress, endProgress, jitter } = rec;
+      const { node, restPos, restQuat, dir, distance, startProgress, endProgress, jitter, rotAxis, rotAngle, _scratchQuat } = rec;
 
       // Calculate staggered local progress
       let localT = 0;
@@ -103,12 +127,21 @@ export class ExplodeController {
         localT = (p - startProgress) / (endProgress - startProgress);
       }
 
-      const easedT = easeOutQuad(localT);
+      // Position uses smooth S-curve easeInOutCubic (accelerates and decelerates with zero jerk)
+      const easedT = easeInOutCubic(localT);
 
       // position = rest + (direction * distance + jitter) * ease(localProgress)
       node.position.x = restPos.x + (dir.x * distance + jitter.x) * easedT;
       node.position.y = restPos.y + (dir.y * distance + jitter.y) * easedT;
       node.position.z = restPos.z + (dir.z * distance + jitter.z) * easedT;
+
+      // Micro-rotation uses easeInOutQuad for organic, gentle settling
+      const rotEasedT = easeInOutQuad(localT);
+
+      // rotation = restQuat * Quaternion.fromAxisAngle(rotAxis, rotAngle * easedT)
+      // Reversible: at localT = 0, rotEasedT = 0, quaternion == restQuat
+      _scratchQuat.setFromAxisAngle(rotAxis, rotAngle * rotEasedT);
+      node.quaternion.copy(restQuat).multiply(_scratchQuat);
     }
   }
 

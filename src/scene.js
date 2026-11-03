@@ -1,18 +1,23 @@
 import * as THREE from 'three';
-import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js';
+import { Reflector } from 'three/examples/jsm/objects/Reflector.js';
 
 /**
- * Three.js Scene, Cinematic Lighting, Environment & Camera Engine
- * Premium dark studio with atmospheric depth, reflective floor, and volumetric fog
+ * High-End Automotive Studio Scene Engine
+ * Features:
+ * 1. Bespoke Automotive Studio Softbox Cyclorama Environment (PMREM)
+ * 2. True Planar Ground Reflection with Depth Fade & Floor Underglow
+ * 3. Twin Front Headlamp Projector Floor Beams with Ignition Animation
+ * 4. Multi-Point Studio Key, Rim & Fill Rig with Dynamic Sweep
+ * 5. Multi-Layer Contact Shadow & Interactive Atmospheric Dust
  */
 
 export function createScene(canvas) {
   // 1. Scene — deep dark void with exponential fog for depth
   const scene = new THREE.Scene();
-  scene.background = new THREE.Color(0x030305);
-  scene.fog = new THREE.FogExp2(0x030305, 0.065);
+  scene.background = new THREE.Color(0x040508);
+  scene.fog = new THREE.FogExp2(0x040508, 0.055);
 
-  // 2. Camera — cinematic low FOV for compression
+  // 2. Camera — cinematic low FOV for automotive telephoto compression
   const camera = new THREE.PerspectiveCamera(
     35,
     window.innerWidth / window.innerHeight,
@@ -36,34 +41,31 @@ export function createScene(canvas) {
   renderer.setSize(window.innerWidth, window.innerHeight);
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, maxPixelRatio));
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = 0.95;
+  renderer.toneMappingExposure = 1.05;
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.shadowMap.enabled = true;
   renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
-  // 4. Environment map for reflections (RoomEnvironment as studio HDRI substitute)
+  // 4. Bespoke Automotive Studio Softbox Lighting Rig (PMREM)
   const pmremGenerator = new THREE.PMREMGenerator(renderer);
   pmremGenerator.compileEquirectangularShader();
-  const roomEnv = new RoomEnvironment();
-  const envTexture = pmremGenerator.fromScene(roomEnv, 0.04).texture;
-  scene.environment = envTexture;
-  // Don't set as background — keep dark void
-  roomEnv.dispose && roomEnv.dispose();
+  const studioEnvTexture = createAutomotiveStudioEnvironment(pmremGenerator);
+  scene.environment = studioEnvTexture;
 
-  // 5. Cinematic Lighting Rig — 5-point studio + hero sweep
-  // A. Soft hemisphere ambient — very subtle fill
-  const hemiLight = new THREE.HemisphereLight(0xc8d8ff, 0x08080c, 0.35);
+  // 5. Studio Lighting Rig
+  // A. Soft hemisphere ambient
+  const hemiLight = new THREE.HemisphereLight(0xd4e2ff, 0x080a12, 0.45);
   scene.add(hemiLight);
 
-  // B. Key Light — large, soft, front-top-right (warm white)
-  const keyLight = new THREE.DirectionalLight(0xfff8f0, 1.8);
-  keyLight.position.set(5.0, 8.0, 6.0);
+  // B. Main Studio Overhead Key Light (Warm softbox feel)
+  const keyLight = new THREE.DirectionalLight(0xfffaf4, 2.2);
+  keyLight.position.set(4.5, 8.5, 5.5);
   keyLight.castShadow = true;
   keyLight.shadow.mapSize.width = 2048;
   keyLight.shadow.mapSize.height = 2048;
   keyLight.shadow.bias = -0.0001;
   keyLight.shadow.normalBias = 0.02;
-  keyLight.shadow.radius = 3;
+  keyLight.shadow.radius = 3.5;
   keyLight.shadow.camera.near = 1;
   keyLight.shadow.camera.far = 28;
   keyLight.shadow.camera.left = -4;
@@ -73,38 +75,42 @@ export function createScene(canvas) {
   scene.add(keyLight);
 
   // C. Cool Blue Rim Light — rear-left (cinematic edge definition)
-  const rimLightLeft = new THREE.DirectionalLight(0x5ea8ff, 1.4);
+  const rimLightLeft = new THREE.DirectionalLight(0x38bdf8, 1.8);
   rimLightLeft.position.set(-6.0, 4.0, -5.0);
   scene.add(rimLightLeft);
 
-  // D. Warm Rim Light — rear-right (subtle counter rim)
-  const rimLightRight = new THREE.DirectionalLight(0xffe8d0, 1.4);
+  // D. Warm Amber/Gold Rim Light — rear-right (sculptural contour)
+  const rimLightRight = new THREE.DirectionalLight(0xffedd5, 1.6);
   rimLightRight.position.set(6.0, 3.5, -4.5);
   scene.add(rimLightRight);
 
-  // E. Under-glow Fill — subtle blue from below for car showroom feel
-  const underGlow = new THREE.PointLight(0x1a4a8a, 0.8, 8, 2);
-  underGlow.position.set(0, -0.3, 0);
+  // E. Under-glow Fill — subtle azure bounce from below
+  const underGlow = new THREE.PointLight(0x0284c7, 1.2, 9, 2);
+  underGlow.position.set(0, -0.2, 0);
   scene.add(underGlow);
 
   // F. Hero Sweep Spot Light — animated during reveal chapter
-  const heroSweepLight = new THREE.SpotLight(0xffffff, 0.0, 20, Math.PI / 5, 0.85, 1.0);
+  const heroSweepLight = new THREE.SpotLight(0xffffff, 0.0, 24, Math.PI / 4.5, 0.88, 1.0);
   heroSweepLight.position.set(-5.0, 5.0, 4.0);
   heroSweepLight.target.position.set(0, 0.45, 0);
   scene.add(heroSweepLight);
   scene.add(heroSweepLight.target);
 
-  // 6. Infinite Dark Floor with Radial Fade Shader
-  const floorGroup = createCinematicFloor();
+  // G. Twin Front Headlamp Floor Projector Beams
+  const { leftBeam, rightBeam } = createHeadlightFloorBeams(scene);
+
+  // 6. Real-Time Ground Reflector & Infinite Dark Floor
+  const floorGroup = createReflectiveShowroomFloor(renderer, isMobile);
   scene.add(floorGroup);
 
-  // 7. Soft Contact Shadow under car
+  // 7. Multi-Layer Contact Shadow under car
   const contactShadowPlane = createContactShadow();
   scene.add(contactShadowPlane);
 
   // 8. Atmospheric Dust Particles
+  let particles = null;
   if (!isMobile) {
-    const particles = createAtmosphericParticles();
+    particles = createAtmosphericParticles();
     scene.add(particles);
   }
 
@@ -129,34 +135,144 @@ export function createScene(canvas) {
       rimLightLeft,
       rimLightRight,
       underGlow,
-      heroSweepLight
+      heroSweepLight,
+      leftHeadlightBeam: leftBeam,
+      rightHeadlightBeam: rightBeam
     },
     floorGroup,
     contactShadowPlane,
+    particles,
     onResize
   };
 }
 
 /**
- * Dark reflective studio floor with smooth radial falloff — infinite, seamless void.
- * Uses a wide plane with an injected distance fade so it dissolves into darkness
- * with zero visible polygon or circle edges at any camera angle.
+ * Generates a bespoke automotive showroom environment using a PMREM cyclorama rig.
+ * Long overhead strip softboxes create realistic continuous reflections down the vehicle curves.
  */
-function createCinematicFloor() {
+function createAutomotiveStudioEnvironment(pmremGenerator) {
+  const envScene = new THREE.Scene();
+  envScene.background = new THREE.Color(0x030408);
+
+  // 1. Long Overhead Strip Softbox (Signature automotive roof reflection)
+  const overheadSoftboxGeo = new THREE.PlaneGeometry(3.5, 14.0);
+  const overheadSoftboxMat = new THREE.MeshBasicMaterial({
+    color: 0xffffff,
+    side: THREE.DoubleSide
+  });
+  const overheadSoftbox = new THREE.Mesh(overheadSoftboxGeo, overheadSoftboxMat);
+  overheadSoftbox.rotation.x = Math.PI / 2;
+  overheadSoftbox.position.set(0, 6.5, 0);
+  envScene.add(overheadSoftbox);
+
+  // 2. Left Lateral Shoulder Softbox (High-contrast shoulder line definition)
+  const leftSoftboxGeo = new THREE.PlaneGeometry(12.0, 2.8);
+  const leftSoftboxMat = new THREE.MeshBasicMaterial({
+    color: 0xd6e8ff,
+    side: THREE.DoubleSide
+  });
+  const leftSoftbox = new THREE.Mesh(leftSoftboxGeo, leftSoftboxMat);
+  leftSoftbox.rotation.y = Math.PI / 2;
+  leftSoftbox.rotation.z = 0.25;
+  leftSoftbox.position.set(-6.0, 3.2, 0);
+  envScene.add(leftSoftbox);
+
+  // 3. Right Lateral Shoulder Softbox
+  const rightSoftboxGeo = new THREE.PlaneGeometry(12.0, 2.8);
+  const rightSoftboxMat = new THREE.MeshBasicMaterial({
+    color: 0xfff0e4,
+    side: THREE.DoubleSide
+  });
+  const rightSoftbox = new THREE.Mesh(rightSoftboxGeo, rightSoftboxMat);
+  rightSoftbox.rotation.y = -Math.PI / 2;
+  rightSoftbox.rotation.z = -0.25;
+  rightSoftbox.position.set(6.0, 3.2, 0);
+  envScene.add(rightSoftbox);
+
+  // 4. Front Radiator Key Softbox
+  const frontSoftboxGeo = new THREE.PlaneGeometry(4.0, 2.5);
+  const frontSoftboxMat = new THREE.MeshBasicMaterial({
+    color: 0xe0f2fe,
+    side: THREE.DoubleSide
+  });
+  const frontSoftbox = new THREE.Mesh(frontSoftboxGeo, frontSoftboxMat);
+  frontSoftbox.position.set(0, 2.5, 7.5);
+  frontSoftbox.rotation.y = Math.PI;
+  envScene.add(frontSoftbox);
+
+  // 5. Rear Spoiler Rim Softbox
+  const rearSoftboxGeo = new THREE.PlaneGeometry(4.0, 2.0);
+  const rearSoftboxMat = new THREE.MeshBasicMaterial({
+    color: 0xff2020,
+    side: THREE.DoubleSide
+  });
+  const rearSoftbox = new THREE.Mesh(rearSoftboxGeo, rearSoftboxMat);
+  rearSoftbox.position.set(0, 2.2, -7.5);
+  envScene.add(rearSoftbox);
+
+  const envTexture = pmremGenerator.fromScene(envScene, 0.04).texture;
+  return envTexture;
+}
+
+/**
+ * True Planar Ground Reflector + Infinite Seamless Fading Void
+ */
+function createReflectiveShowroomFloor(renderer, isMobile) {
   const group = new THREE.Group();
 
-  // 120x120 plane — vast coverage to the horizon
+  // 1. Reflector Plane (True mirror reflection of wheels, paint, red taillights)
+  if (!isMobile) {
+    const reflectorGeo = new THREE.PlaneGeometry(24, 24);
+    const reflector = new Reflector(reflectorGeo, {
+      clipBias: 0.003,
+      textureWidth: Math.floor(window.innerWidth * 0.75),
+      textureHeight: Math.floor(window.innerHeight * 0.75),
+      color: 0x090c14
+    });
+    reflector.rotation.x = -Math.PI / 2;
+    reflector.position.y = -0.003;
+
+    // Inject distance radial falloff into Reflector material so mirror dissolves gracefully
+    if (reflector.material && reflector.material.onBeforeCompile) {
+      reflector.material.onBeforeCompile = (shader) => {
+        shader.vertexShader = shader.vertexShader.replace(
+          '#include <common>',
+          `#include <common>
+           varying vec3 vWorldRefPos;`
+        );
+        shader.vertexShader = shader.vertexShader.replace(
+          '#include <project_vertex>',
+          `#include <project_vertex>
+           vWorldRefPos = (modelMatrix * vec4(transformed, 1.0)).xyz;`
+        );
+        shader.fragmentShader = shader.fragmentShader.replace(
+          '#include <common>',
+          `#include <common>
+           varying vec3 vWorldRefPos;`
+        );
+        shader.fragmentShader = shader.fragmentShader.replace(
+          '#include <dithering_fragment>',
+          `#include <dithering_fragment>
+           float dist = length(vWorldRefPos.xz);
+           float fade = 1.0 - smoothstep(1.8, 8.5, dist);
+           gl_FragColor.rgb *= (0.45 * fade);`
+        );
+      };
+    }
+    group.add(reflector);
+  }
+
+  // 2. Infinite Dark Studio Floor Base (120x120) with smooth radial falloff
   const floorGeo = new THREE.PlaneGeometry(120, 120, 1, 1);
   const floorMat = new THREE.MeshStandardMaterial({
-    color: 0x05070c,
-    roughness: 0.22,
-    metalness: 0.82,
-    envMapIntensity: 1.1,
+    color: 0x040508,
+    roughness: 0.28,
+    metalness: 0.75,
+    envMapIntensity: 1.2,
     transparent: true,
     depthWrite: false
   });
 
-  // Inject radial distance fade: opacity 1.0 near the car, decaying smoothly to 0.0
   floorMat.onBeforeCompile = (shader) => {
     shader.vertexShader = shader.vertexShader.replace(
       '#include <common>',
@@ -177,7 +293,6 @@ function createCinematicFloor() {
       '#include <dithering_fragment>',
       `#include <dithering_fragment>
        float dist = length(vCustomWorldPos.xz);
-       // Seamless cubic fade from radius 2.5 to 24.0 into dark void
        float fade = 1.0 - smoothstep(2.5, 24.0, dist);
        gl_FragColor.a *= fade;`
     );
@@ -186,14 +301,14 @@ function createCinematicFloor() {
   const floorMesh = new THREE.Mesh(floorGeo, floorMat);
   floorMesh.rotation.x = -Math.PI / 2;
   floorMesh.position.y = -0.002;
-  floorMesh.receiveShadow = false; // Eliminates any directional shadow boundary artifacts
+  floorMesh.receiveShadow = false;
   group.add(floorMesh);
 
   return group;
 }
 
 /**
- * Soft radial contact shadow under the vehicle
+ * Soft multi-stop radial contact shadow under the vehicle
  */
 function createContactShadow() {
   const canvas = document.createElement('canvas');
@@ -201,13 +316,12 @@ function createContactShadow() {
   canvas.height = 512;
   const ctx = canvas.getContext('2d');
 
-  // Multi-layered soft radial shadow with smooth decay to transparent
-  const grad = ctx.createRadialGradient(256, 256, 10, 256, 256, 250);
-  grad.addColorStop(0, 'rgba(0, 0, 0, 0.95)');
-  grad.addColorStop(0.2, 'rgba(0, 0, 0, 0.80)');
-  grad.addColorStop(0.45, 'rgba(0, 0, 0, 0.45)');
-  grad.addColorStop(0.7, 'rgba(0, 0, 0, 0.15)');
-  grad.addColorStop(0.9, 'rgba(0, 0, 0, 0.03)');
+  const grad = ctx.createRadialGradient(256, 256, 12, 256, 256, 250);
+  grad.addColorStop(0, 'rgba(0, 0, 0, 0.98)');
+  grad.addColorStop(0.25, 'rgba(0, 0, 0, 0.85)');
+  grad.addColorStop(0.5, 'rgba(0, 0, 0, 0.48)');
+  grad.addColorStop(0.75, 'rgba(0, 0, 0, 0.16)');
+  grad.addColorStop(0.92, 'rgba(0, 0, 0, 0.03)');
   grad.addColorStop(1, 'rgba(0, 0, 0, 0)');
 
   ctx.fillStyle = grad;
@@ -218,7 +332,7 @@ function createContactShadow() {
   const shadowMat = new THREE.MeshBasicMaterial({
     map: shadowTexture,
     transparent: true,
-    opacity: 0.9,
+    opacity: 0.95,
     depthWrite: false
   });
 
@@ -229,22 +343,40 @@ function createContactShadow() {
 }
 
 /**
- * Floating atmospheric dust particles — subtle depth and volume
+ * Twin Front Headlamp Floor Projector Beams
+ */
+function createHeadlightFloorBeams(scene) {
+  const leftBeam = new THREE.SpotLight(0xdbeafe, 0.0, 16, Math.PI / 5.5, 0.8, 1.2);
+  leftBeam.position.set(0.55, 0.65, 1.8);
+  leftBeam.target.position.set(0.55, 0.0, 5.5);
+  scene.add(leftBeam);
+  scene.add(leftBeam.target);
+
+  const rightBeam = new THREE.SpotLight(0xdbeafe, 0.0, 16, Math.PI / 5.5, 0.8, 1.2);
+  rightBeam.position.set(-0.55, 0.65, 1.8);
+  rightBeam.target.position.set(-0.55, 0.0, 5.5);
+  scene.add(rightBeam);
+  scene.add(rightBeam.target);
+
+  return { leftBeam, rightBeam };
+}
+
+/**
+ * Floating atmospheric dust particles — subtle depth and interactive volume
  */
 function createAtmosphericParticles() {
-  const count = 600;
+  const count = 750;
   const positions = new Float32Array(count * 3);
   const sizes = new Float32Array(count);
   const alphas = new Float32Array(count);
 
   for (let i = 0; i < count; i++) {
-    // Spread particles in a large dome around the car
-    positions[i * 3] = (Math.random() - 0.5) * 20;
+    positions[i * 3] = (Math.random() - 0.5) * 22;
     positions[i * 3 + 1] = Math.random() * 8;
-    positions[i * 3 + 2] = (Math.random() - 0.5) * 20;
+    positions[i * 3 + 2] = (Math.random() - 0.5) * 22;
 
-    sizes[i] = 0.01 + Math.random() * 0.025;
-    alphas[i] = 0.1 + Math.random() * 0.3;
+    sizes[i] = 0.012 + Math.random() * 0.028;
+    alphas[i] = 0.12 + Math.random() * 0.35;
   }
 
   const geometry = new THREE.BufferGeometry();
@@ -258,7 +390,7 @@ function createAtmosphericParticles() {
     blending: THREE.AdditiveBlending,
     uniforms: {
       uTime: { value: 0 },
-      uColor: { value: new THREE.Color(0x6090c0) },
+      uColor: { value: new THREE.Color(0x38bdf8) },
       uPixelRatio: { value: Math.min(window.devicePixelRatio, 2) }
     },
     vertexShader: `
@@ -270,19 +402,16 @@ function createAtmosphericParticles() {
 
       void main() {
         vec3 pos = position;
-        
-        // Gentle floating drift
-        pos.y += sin(uTime * 0.15 + position.x * 0.5) * 0.3;
-        pos.x += sin(uTime * 0.08 + position.z * 0.3) * 0.15;
-        pos.z += cos(uTime * 0.1 + position.y * 0.4) * 0.12;
-        
+        pos.y += sin(uTime * 0.18 + position.x * 0.4) * 0.35;
+        pos.x += sin(uTime * 0.10 + position.z * 0.3) * 0.2;
+        pos.z += cos(uTime * 0.12 + position.y * 0.35) * 0.18;
+
         vec4 mvPosition = modelViewMatrix * vec4(pos, 1.0);
         gl_Position = projectionMatrix * mvPosition;
-        gl_PointSize = aSize * uPixelRatio * (200.0 / -mvPosition.z);
-        
-        // Distance fade
+        gl_PointSize = aSize * uPixelRatio * (220.0 / -mvPosition.z);
+
         float dist = length(mvPosition.xyz);
-        vAlpha = aAlpha * smoothstep(15.0, 2.0, dist) * 0.4;
+        vAlpha = aAlpha * smoothstep(16.0, 2.0, dist) * 0.45;
       }
     `,
     fragmentShader: `
@@ -290,10 +419,9 @@ function createAtmosphericParticles() {
       varying float vAlpha;
 
       void main() {
-        // Soft circle
         float d = length(gl_PointCoord - vec2(0.5));
         if (d > 0.5) discard;
-        float alpha = smoothstep(0.5, 0.1, d) * vAlpha;
+        float alpha = smoothstep(0.5, 0.08, d) * vAlpha;
         gl_FragColor = vec4(uColor, alpha);
       }
     `
