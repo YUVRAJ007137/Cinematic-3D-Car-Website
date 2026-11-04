@@ -96,8 +96,15 @@ export function createScene(canvas) {
   scene.add(heroSweepLight);
   scene.add(heroSweepLight.target);
 
-  // G. Twin Front Headlamp Floor Projector Beams
-  const { leftBeam, rightBeam } = createHeadlightFloorBeams(scene);
+  // F2. Precision Cinema Strip Light — razor-sharp light slice for Chapter 1 silhouette & Chapter 6 paint reveals
+  const stripLight = new THREE.SpotLight(0xf1f5f9, 0.0, 28, Math.PI / 9, 0.18, 1.1);
+  stripLight.position.set(-6.0, 2.2, 3.2);
+  stripLight.target.position.set(-5.0, 0.45, 0);
+  scene.add(stripLight);
+  scene.add(stripLight.target);
+
+  // G. Twin Front Headlamp Floor Projector Beams & Anamorphic Flares
+  const { leftBeam, rightBeam, leftFlare, rightFlare } = createHeadlightFloorBeams(scene);
 
   // 6. Real-Time Ground Reflector & Infinite Dark Floor
   const floorGroup = createReflectiveShowroomFloor(renderer, isMobile);
@@ -136,13 +143,25 @@ export function createScene(canvas) {
       rimLightRight,
       underGlow,
       heroSweepLight,
+      stripLight,
       leftHeadlightBeam: leftBeam,
-      rightHeadlightBeam: rightBeam
+      rightHeadlightBeam: rightBeam,
+      leftFlare,
+      rightFlare
     },
     floorGroup,
     contactShadowPlane,
     particles,
-    onResize
+    onResize,
+    setBackgroundTint(colorHex) {
+      if (!colorHex) return;
+      const baseColor = new THREE.Color(colorHex);
+      const deepTint = baseColor.clone().multiplyScalar(0.045);
+      scene.background.lerp(deepTint, 0.12);
+      if (scene.fog) {
+        scene.fog.color.lerp(deepTint, 0.12);
+      }
+    }
   };
 }
 
@@ -343,7 +362,7 @@ function createContactShadow() {
 }
 
 /**
- * Twin Front Headlamp Floor Projector Beams
+ * Twin Front Headlamp Floor Projector Beams & Anamorphic Horizontal Flares
  */
 function createHeadlightFloorBeams(scene) {
   const leftBeam = new THREE.SpotLight(0xdbeafe, 0.0, 16, Math.PI / 5.5, 0.8, 1.2);
@@ -358,7 +377,40 @@ function createHeadlightFloorBeams(scene) {
   scene.add(rightBeam);
   scene.add(rightBeam.target);
 
-  return { leftBeam, rightBeam };
+  // Horizontal Anamorphic Blue Flare Sprites
+  const flareCanvas = document.createElement('canvas');
+  flareCanvas.width = 256;
+  flareCanvas.height = 32;
+  const ctx = flareCanvas.getContext('2d');
+  const grad = ctx.createRadialGradient(128, 16, 0, 128, 16, 128);
+  grad.addColorStop(0, 'rgba(255, 255, 255, 1.0)');
+  grad.addColorStop(0.2, 'rgba(56, 189, 248, 0.85)');
+  grad.addColorStop(0.6, 'rgba(14, 165, 233, 0.25)');
+  grad.addColorStop(1, 'rgba(2, 132, 199, 0.0)');
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, 0, 256, 32);
+
+  const flareTex = new THREE.CanvasTexture(flareCanvas);
+  const flareMat = new THREE.SpriteMaterial({
+    map: flareTex,
+    color: 0x38bdf8,
+    transparent: true,
+    opacity: 0.0,
+    blending: THREE.AdditiveBlending,
+    depthWrite: false
+  });
+
+  const leftFlare = new THREE.Sprite(flareMat);
+  leftFlare.position.set(0.55, 0.65, 1.85);
+  leftFlare.scale.set(1.1, 0.05, 1.0);
+  scene.add(leftFlare);
+
+  const rightFlare = new THREE.Sprite(flareMat.clone());
+  rightFlare.position.set(-0.55, 0.65, 1.85);
+  rightFlare.scale.set(1.1, 0.05, 1.0);
+  scene.add(rightFlare);
+
+  return { leftBeam, rightBeam, leftFlare, rightFlare };
 }
 
 /**

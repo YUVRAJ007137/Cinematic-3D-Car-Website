@@ -5,6 +5,23 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Bugatti Chiron Pur Sport — A Cinematic 3D Study</title>
   <meta name="description" content="An interactive, cinematic scroll-driven 3D exploration of the Bugatti Chiron Pur Sport featuring real-time exploded layer architecture, PBR shaders, and computational aerodynamics.">
+  <link rel="canonical" href="https://cinematic-3d-car.demo/">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <meta name="theme-color" content="#040508">
+
+  <!-- Open Graph / Social Sharing -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://cinematic-3d-car.demo/">
+  <meta property="og:title" content="Bugatti Chiron Pur Sport — A Cinematic 3D Study">
+  <meta property="og:description" content="Scroll through an immersive real-time 3D hyper-engineering study featuring exploded layer views, bespoke PBR shaders, interactive customizer, and cinematic telemetry.">
+  <meta property="og:image" content="/og-preview.svg">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:url" content="https://cinematic-3d-car.demo/">
+  <meta name="twitter:title" content="Bugatti Chiron Pur Sport — A Cinematic 3D Study">
+  <meta name="twitter:description" content="Real-time 3D cinematic showcase with exploded layers, PBR customizer, and macro telemetry.">
+  <meta name="twitter:image" content="/og-preview.svg">
 
   <!-- Preconnect & Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -14,26 +31,43 @@
   <link rel="stylesheet" href="/src/style.css">
 </head>
 <body>
-  <!-- Real Loading Screen -->
+  <!-- Real Loading Screen with Chapter 1 Teaser -->
   <div id="loading-screen" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
     <div class="loader-content">
       <div class="brand-monogram">PUR SPORT</div>
       <div class="loader-title">CINEMATIC 3D STUDY</div>
+      <div class="loader-teaser">
+        <span class="teaser-tag">CHAPTER 01 // THE REVEAL</span>
+        <p class="teaser-quote">“Engineered for extreme lateral acceleration and computational aerodynamics.”</p>
+      </div>
       <div class="loader-bar-track">
         <div id="loader-bar-fill" class="loader-bar-fill"></div>
       </div>
       <div class="loader-status">
         <span id="loader-percent">0%</span>
-        <span class="loader-note">Compiling shaders & geometry...</span>
+        <span class="loader-note" id="loader-status-text">Compiling shaders & geometry...</span>
       </div>
     </div>
   </div>
 
-  <!-- WebGL Fallback Screen (PRD Section 10) -->
+  <!-- Semantic Crawler & Non-JS Fallback -->
   <noscript>
-    <div class="fallback-screen">
-      <h1>CHIRON PUR SPORT</h1>
-      <p>JavaScript and WebGL 2.0 are required to experience this cinematic real-time 3D study.</p>
+    <div class="fallback-screen static-content-fallback">
+      <h1>CHIRON PUR SPORT // CINEMATIC 3D STUDY</h1>
+      <p class="lead">An interactive real-time 3D portfolio study of hyper-engineering, computational aerodynamics, and lightweight composite structures.</p>
+      <div class="static-features">
+        <h2>STUDY CHAPTERS &amp; ARCHITECTURE</h2>
+        <ul>
+          <li><strong>01. Hero Reveal:</strong> Atmospheric studio illumination and dynamic headlight ignition.</li>
+          <li><strong>02. Exterior Dynamics:</strong> Aerodynamic monocoque, horseshoe front intake, and 1.90m rear wing.</li>
+          <li><strong>03. Exploded Layer Architecture:</strong> Data-driven separation into body panels, optical arrays, cockpit, 8.0L W16 powertrain, and carbon-ceramic brakes.</li>
+          <li><strong>04. Reassembly &amp; Precision Settle:</strong> Hydraulic reverse timeline restoring structural integrity.</li>
+          <li><strong>05. Macro Optical Telemetry:</strong> Quad-matrix LED projector lenses with dynamic depth of field.</li>
+          <li><strong>06. Luxury Showroom Customizer:</strong> Bespoke paint presets, surface finishes, forged magnesium wheels, and titanium brake calipers.</li>
+        </ul>
+        <h2>CORE SPECIFICATIONS</h2>
+        <p>8.0L Quad-Turbo W16 / 1,500 PS @ 6,900 RPM / 1,600 Nm Torque / 0-100 km/h in 2.3s / Top Speed 350 km/h.</p>
+      </div>
     </div>
   </noscript>
   <div id="webgl-error-fallback" class="fallback-screen" style="display: none;">
@@ -47,6 +81,20 @@
 
   <!-- Master Fixed WebGL Canvas -->
   <canvas id="webgl-canvas" aria-label="Interactive 3D Chiron Pur Sport Viewport"></canvas>
+
+  <!-- Cinematic Launch Film Reel HUD (Top Left) -->
+  <div id="film-reel-hud" class="film-reel-hud" aria-label="Cinematic Film Reel Status">
+    <div class="reel-chapter-row">
+      <span id="reel-current-num" class="reel-num">01</span>
+      <span class="reel-slash">/</span>
+      <span class="reel-total">06</span>
+    </div>
+    <div id="reel-current-title" class="reel-title">THE REVEAL</div>
+    <div id="reel-current-move" class="reel-move">GROUND PUSH-IN</div>
+  </div>
+
+  <!-- Speed Lines Canvas Overlay for Fast Camera Moves -->
+  <canvas id="speed-lines-canvas" class="speed-lines-canvas" aria-hidden="true"></canvas>
 
   <!-- Custom Cursor (Upgrade #5) -->
   <div id="custom-cursor" class="custom-cursor" aria-hidden="true">
@@ -69,24 +117,32 @@
     <circle id="leader-dot" class="leader-dot" r="4" cx="0" cy="0"></circle>
   </svg>
 
-  <!-- Side Navigation Dots with Progress Line (Upgrade #3) -->
+  <!-- Side Navigation Dots with Progress Line & Chapter Tooltips -->
   <nav class="chapter-nav" aria-label="Chapter navigation" style="--scroll-progress: 0;">
     <div class="chapter-progress-track">
       <div class="chapter-progress-fill"></div>
     </div>
-    <button class="chapter-dot active" data-index="0" aria-label="Chapter 1: Hero Reveal" title="Hero Reveal"></button>
-    <button class="chapter-dot" data-index="1" aria-label="Chapter 2: Exterior Orbit" title="Exterior Orbit"></button>
-    <button class="chapter-dot" data-index="2" aria-label="Chapter 3: Exploded Architecture" title="Exploded Architecture"></button>
-    <button class="chapter-dot" data-index="3" aria-label="Chapter 4: Reassembly" title="Reassembly"></button>
-    <button class="chapter-dot" data-index="4" aria-label="Chapter 5: Detail Precision" title="Detail Precision"></button>
-    <button class="chapter-dot" data-index="5" aria-label="Chapter 6: Specifications & Config" title="Specifications & Config"></button>
+    <button class="chapter-dot active" data-index="0" aria-label="Chapter 1: Hero Reveal" title="Hero Reveal"><span class="chapter-dot-tooltip">01 Reveal</span></button>
+    <button class="chapter-dot" data-index="1" aria-label="Chapter 2: Exterior Orbit" title="Exterior Orbit"><span class="chapter-dot-tooltip">02 Orbit</span></button>
+    <button class="chapter-dot" data-index="2" aria-label="Chapter 3: Exploded Architecture" title="Exploded Architecture"><span class="chapter-dot-tooltip">03 Explode</span></button>
+    <button class="chapter-dot" data-index="3" aria-label="Chapter 4: Reassembly" title="Reassembly"><span class="chapter-dot-tooltip">04 Reassembly</span></button>
+    <button class="chapter-dot" data-index="4" aria-label="Chapter 5: Detail Precision" title="Detail Precision"><span class="chapter-dot-tooltip">05 Details</span></button>
+    <button class="chapter-dot" data-index="5" aria-label="Chapter 6: Specifications & Config" title="Specifications & Config"><span class="chapter-dot-tooltip">06 Config</span></button>
   </nav>
 
-  <!-- Day/Night Toggle (Upgrade #7) -->
-  <button id="day-night-toggle" class="day-night-toggle" aria-label="Toggle day/night mode" title="Toggle Day/Night">
-    <span class="toggle-icon toggle-icon--sun">☀</span>
-    <span class="toggle-icon toggle-icon--moon">🌙</span>
-  </button>
+  <!-- Top Right Utility Controls: Audio Mute Toggle & Day/Night Toggle -->
+  <div class="top-controls">
+    <button id="audio-toggle" class="audio-toggle muted" aria-label="Toggle audio experience" aria-pressed="false" title="Unmute Audio Experience">
+      <span class="audio-icon audio-icon--muted">🔇</span>
+      <span class="audio-icon audio-icon--playing">🔊</span>
+      <span class="audio-label">SOUND OFF</span>
+    </button>
+
+    <button id="day-night-toggle" class="day-night-toggle" aria-label="Toggle day/night mode" title="Toggle Day/Night">
+      <span class="toggle-icon toggle-icon--sun">☀</span>
+      <span class="toggle-icon toggle-icon--moon">🌙</span>
+    </button>
+  </div>
 
   <!-- Scroll Velocity Indicator (Upgrade #4) -->
   <div id="scroll-velocity-bar" class="scroll-velocity-bar" aria-hidden="true"></div>
@@ -100,6 +156,11 @@
     <div class="hero-eyebrow">A CINEMATIC STUDY — FAN PORTFOLIO</div>
     <h1 class="hero-title">CHIRON</h1>
     <div class="hero-subtitle">PUR SPORT</div>
+
+    <div class="reveal-line-wrap" id="reveal-line-wrap">
+      <p class="reveal-line" id="reveal-line">Not built to be seen. Built to be felt.</p>
+    </div>
+
     <div class="hero-metrics">
       <span>1,500 PS</span>
       <span class="divider">/</span>
@@ -114,6 +175,17 @@
       <span class="scroll-text">SCROLL TO IGNITE</span>
     </div>
   </section>
+
+  <!-- 2. Exterior Orbit Annotations (Chapter 2) -->
+  <div id="orbit-annotations" class="orbit-annotations" aria-label="Exterior Architectural Features" aria-live="polite">
+    <div class="orbit-card" id="orbit-card">
+      <div class="orbit-meta">
+        <span id="orbit-bearing" class="orbit-bearing">REAR // 01</span>
+        <span class="orbit-tag">RACK FOCUS</span>
+      </div>
+      <h2 id="orbit-title" class="orbit-title">The fins.</h2>
+    </div>
+  </div>
 
   <!-- 2. Exterior Headline Stats Section -->
   <section id="exterior-stats" class="overlay-section exterior-overlay" aria-label="Vehicle Highlights">
@@ -134,22 +206,47 @@
     </div>
   </section>
 
-  <!-- 3. Exploded Architecture Callout Card -->
+  <!-- 3. Dolly Zoom Emphasis Screen (Chapter 3) -->
+  <div id="dolly-zoom-screen" class="dolly-zoom-screen" aria-hidden="true">
+    <div class="dolly-content">
+      <p class="dolly-line">Now look inside.</p>
+    </div>
+  </div>
+
+  <!-- 4. Exploded Architecture Specimen Card (Chapter 4) -->
   <div id="callout-card" class="callout-card" role="region" aria-live="polite" aria-label="Component specifications">
-    <div id="callout-badge" class="callout-badge">LAYER 01</div>
+    <div class="callout-header-row">
+      <div id="callout-badge" class="callout-badge">LAYER 01</div>
+      <span class="specimen-tag">EXPLODED SPECIMEN</span>
+    </div>
     <h2 id="callout-title" class="callout-title">Aerodynamic Monocoque</h2>
+    <p id="callout-desc" class="callout-desc">Sculpted carbon-composite exterior tailored for peak aerodynamic stability.</p>
     <div class="callout-stat-group">
       <div id="callout-stat-val" class="callout-stat-val">1.9 M²</div>
       <div id="callout-stat-lbl" class="callout-stat-lbl">Active Downforce Surface</div>
     </div>
-    <p id="callout-desc" class="callout-desc">Sculpted carbon-composite exterior tailored for peak aerodynamic stability.</p>
   </div>
 
-  <!-- X-Ray / Transparency Slider (Upgrade #9) -->
-  <div id="xray-slider-wrap" class="xray-slider-wrap" aria-label="X-Ray transparency control">
+  <!-- Vertical Depth Ruler (Right Viewport Edge - Chapter 4) -->
+  <aside id="depth-ruler" class="depth-ruler" aria-label="Layer Architecture Depth" aria-hidden="true">
+    <div class="depth-ruler-title">DEPTH RULER</div>
+    <div class="depth-ruler-track">
+      <div id="depth-ruler-thumb" class="depth-ruler-thumb"></div>
+      <div class="ruler-notch active" data-layer="body_panels"><span class="notch-num">01</span><span class="notch-lbl">SHELL</span></div>
+      <div class="ruler-notch" data-layer="glass_and_lights"><span class="notch-num">02</span><span class="notch-lbl">OPTICS</span></div>
+      <div class="ruler-notch" data-layer="interior"><span class="notch-num">03</span><span class="notch-lbl">CABIN</span></div>
+      <div class="ruler-notch" data-layer="mechanical"><span class="notch-num">04</span><span class="notch-lbl">POWERTRAIN</span></div>
+      <div class="ruler-notch" data-layer="brakes"><span class="notch-num">05</span><span class="notch-lbl">BRAKES</span></div>
+      <div class="ruler-notch" data-layer="wheels"><span class="notch-num">06</span><span class="notch-lbl">WHEELS</span></div>
+    </div>
+  </aside>
+
+  <!-- X-Ray / Transparency Slider & Reset Exploded View Control (Upgrade #9) -->
+  <div id="xray-slider-wrap" class="xray-slider-wrap" aria-label="X-Ray and explode controls">
     <span class="xray-label xray-label--solid">SOLID</span>
     <input id="xray-slider" type="range" min="0" max="100" value="0" class="xray-slider" aria-label="X-Ray transparency">
     <span class="xray-label xray-label--xray">X-RAY</span>
+    <button id="btn-reset-explode" class="btn-reset-explode" aria-label="Reset Exploded View" title="Reassemble Parts">RESET EXPLODED VIEW</button>
   </div>
 
   <!-- 4. Detail Focus Section -->
@@ -159,6 +256,12 @@
       <h2 id="detail-title" class="detail-title">QUAD-MATRIX LIGHTING</h2>
       <p id="detail-desc" class="detail-desc">Four compact LED projector modules per cluster with sculpted heat-extraction louvers.</p>
     </div>
+
+    <!-- Director's Notes (Macro Chapter 5) -->
+    <div id="directors-note-card" class="directors-note-card" aria-label="Director's Notes" aria-live="polite">
+      <span class="directors-tag" id="directors-tag">// DIRECTOR'S NOTE</span>
+      <p class="directors-quote" id="directors-quote">“Every vent here moves air. None of them are decoration.”</p>
+    </div>
   </section>
 
   <!-- 5. CTA & Spec Closer Section -->
@@ -167,6 +270,13 @@
     <div class="cta-top-ribbon">
       <div class="cta-tag">THE PINNACLE OF HYPER-ENGINEERING</div>
       <h2 class="cta-headline">CHIRON PUR SPORT</h2>
+    </div>
+
+    <!-- Chapter 6 Finale Hero CTA -->
+    <div id="finale-cta-hero" class="finale-cta-hero">
+      <p class="finale-tag">06 // THE FINALE</p>
+      <h3 class="finale-film-line">Make it yours.</h3>
+      <button id="btn-reserve-viewing" class="btn-reserve-viewing" aria-label="Reserve a viewing">Reserve a viewing.</button>
     </div>
 
     <!-- Center Drag to Orbit Floating Hint -->
@@ -203,11 +313,53 @@
 
       <div class="dock-divider"></div>
 
-      <!-- Action Button -->
+      <!-- Wheel Finishes -->
+      <div class="dock-section">
+        <span class="dock-label">AERO WHEELS</span>
+        <div class="swatches-row">
+          <button class="wheel-swatch active" data-wheels="magnesium" style="--wheel-color: #18181c;" title="Forged Magnesium" aria-label="Forged Magnesium Wheels"></button>
+          <button class="wheel-swatch" data-wheels="stealth_black" style="--wheel-color: #09090b;" title="Stealth Noir" aria-label="Stealth Noir Wheels"></button>
+          <button class="wheel-swatch" data-wheels="hyper_silver" style="--wheel-color: #e2e8f0;" title="Hyper Silver" aria-label="Hyper Silver Wheels"></button>
+          <button class="wheel-swatch" data-wheels="tuscan_gold" style="--wheel-color: #d4af37;" title="Tuscan Bronze" aria-label="Tuscan Bronze Wheels"></button>
+        </div>
+      </div>
+
+      <div class="dock-divider"></div>
+
+      <!-- Caliper Colors -->
+      <div class="dock-section">
+        <span class="dock-label">CALIPERS</span>
+        <div class="swatches-row">
+          <button class="caliper-swatch active" data-calipers="racing_red" style="--caliper-color: #dc2626;" title="French Racing Red" aria-label="Racing Red Calipers"></button>
+          <button class="caliper-swatch" data-calipers="speed_yellow" style="--caliper-color: #eab308;" title="Vibrant Yellow" aria-label="Vibrant Yellow Calipers"></button>
+          <button class="caliper-swatch" data-calipers="acid_green" style="--caliper-color: #84cc16;" title="Acid Green" aria-label="Acid Green Calipers"></button>
+          <button class="caliper-swatch" data-calipers="stealth_black" style="--caliper-color: #18181b;" title="Stealth Noir" aria-label="Stealth Noir Calipers"></button>
+        </div>
+      </div>
+
+      <div class="dock-divider"></div>
+
+      <!-- Interior Upholstery -->
+      <div class="dock-section">
+        <span class="dock-label">CABIN</span>
+        <div class="interior-toggle-group">
+          <button class="interior-pill active" data-interior="pur_sport_alcantara" aria-label="Alcantara Interior">ALCANTARA</button>
+          <button class="interior-pill" data-interior="beluga_noir" aria-label="Beluga Noir Interior">BELUGA</button>
+          <button class="interior-pill" data-interior="cognac_tan" aria-label="Cognac Tan Interior">COGNAC</button>
+        </div>
+      </div>
+
+      <div class="dock-divider"></div>
+
+      <!-- Action Buttons -->
       <div class="dock-section dock-actions">
-        <button id="btn-open-specs" class="btn-cta btn-cta-primary" aria-haspopup="dialog" aria-controls="specs-modal">EXPLORE SPECIFICATIONS</button>
+        <button id="btn-share-config" class="btn-cta btn-cta-secondary" aria-label="Share bespoke configuration">SHARE CONFIG</button>
+        <button id="btn-open-specs" class="btn-cta btn-cta-primary" aria-haspopup="dialog" aria-controls="specs-modal">SPECIFICATIONS</button>
       </div>
     </div>
+
+    <!-- Share Toast Notification -->
+    <div id="share-toast" class="share-toast" role="status" aria-live="polite">Configuration URL copied to clipboard!</div>
 
     <!-- Discreet Bottom Footer -->
     <footer class="dock-footer">

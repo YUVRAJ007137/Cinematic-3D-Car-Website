@@ -1,0 +1,61 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Explode Configuration",
+  "description": "Defines per-group explosion direction, distance, timeline range, and camera focus.",
+  "type": "object",
+  "additionalProperties": {
+    "type": "object",
+    "required": ["direction", "distance", "start", "end"],
+    "properties": {
+      "direction": {
+        "type": "array",
+        "items": { "type": "number" },
+        "minItems": 3,
+        "maxItems": 3,
+        "description": "XYZ unit direction vector"
+      },
+      "distance": {
+        "type": "number",
+        "description": "Travel distance in world units"
+      },
+      "start": {
+        "type": "number",
+        "minimum": 0,
+        "maximum": 1,
+        "description": "Normalized start progress within explode chapter"
+      },
+      "end": {
+        "type": "number",
+        "minimum": 0,
+        "maximum": 1,
+        "description": "Normalized end progress within explode chapter"
+      },
+      "ease": {
+        "type": "string",
+        "description": "GSAP easing curve"
+      },
+      "camera": {
+        "type": "object",
+        "properties": {
+          "position": {
+            "type": "array",
+            "items": { "type": "number" },
+            "minItems": 3,
+            "maxItems": 3
+          },
+          "target": {
+            "type": "array",
+            "items": { "type": "number" },
+            "minItems": 3,
+            "maxItems": 3
+          },
+          "fov": {
+            "type": "number",
+            "minimum": 10,
+            "maximum": 120
+          }
+        }
+      }
+    }
+  }
+}

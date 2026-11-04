@@ -8,7 +8,7 @@ import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js';
  * seats tires precisely on y = 0, and injects artistic powertrain internals.
  */
 
-export async function loadCarModel(onProgress) {
+export async function loadCarModel(onProgress, renderer = null) {
   const loader = new GLTFLoader();
   const dracoLoader = new DRACOLoader();
   dracoLoader.setDecoderPath('/draco/');
@@ -18,6 +18,9 @@ export async function loadCarModel(onProgress) {
     loader.load(
       '/models/veyron.glb',
       (gltf) => {
+        // Free Draco Web Worker threads once model parsing is done
+        dracoLoader.dispose();
+
         const root = gltf.scene;
 
         // 1. Initial Bounding Box computation

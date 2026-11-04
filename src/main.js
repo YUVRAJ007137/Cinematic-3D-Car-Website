@@ -6,11 +6,16 @@ import { ExplodeController } from './explode.js';
 import { setupPostProcessing } from './post.js';
 import { OverlayController } from './overlay.js';
 import { TimelineController } from './timeline.js';
+import { audioManager } from './audio.js';
+import { HotspotManager } from './hotspots.js';
+import { teardownScene } from './dispose.js';
+import { LensCursor } from './cursor.js';
 
 /**
  * Cinematic 3D Car Website — Main Orchestrator
  * Integrates high-end PBR materials, softbox PMREM lighting, planar reflections,
- * dynamic DoF, interactive 360° orbit, and procedural automotive textures.
+ * dynamic DoF, interactive 360° orbit, procedural automotive textures,
+ * spatial audio, interactive raycast hotspots, and teardown disposers.
  */
 
 async function main() {
@@ -55,18 +60,22 @@ async function main() {
   const loadingScreen = document.getElementById('loading-screen');
   const barFill = document.getElementById('loader-bar-fill');
   const percentEl = document.getElementById('loader-percent');
+  const statusTextEl = document.getElementById('loader-status-text');
 
-  function updateLoaderProgress(pct) {
+  function updateLoaderProgress(pct, statusNote) {
     const val = Math.min(100, Math.round(pct));
     if (barFill) barFill.style.width = `${val}%`;
     if (percentEl) percentEl.innerText = `${val}%`;
+    if (statusTextEl && statusNote) statusTextEl.innerText = statusNote;
   }
+
+  updateLoaderProgress(15, 'Streaming Draco geometry...');
 
   // 5. Load 3D Vehicle Model with Progress Bar
   let carData;
   try {
     carData = await loadCarModel((pct) => {
-      updateLoaderProgress(pct * 0.85);
+      updateLoaderProgress(15 + pct * 0.70, `Streaming 3D geometry... ${Math.round(pct)}%`);
     });
   } catch (err) {
     console.error('Failed to load 3D model:', err);
@@ -75,6 +84,8 @@ async function main() {
 
   const { carContainer, root: modelRoot } = carData;
   scene.add(carContainer);
+
+  updateLoaderProgress(88, 'Synthesizing PBR procedural shaders...');
 
   // 6. Upgraded PBR Materials Pass with Procedural Automotive Shaders
   setupMaterials(modelRoot, groupsData);
@@ -98,10 +109,18 @@ async function main() {
     overlayController,
     postController,
     carContainer,
-    canvas
+    canvas,
+    scene
   });
 
-  // 11. Wire Chapter Navigation Dots
+  // 11. Interactive Hotspots System
+  const hotspotManager = new HotspotManager(scene, camera, canvas, carContainer);
+
+  // 12. Audio Manager & Lens Reticle Cursor Setup
+  audioManager.setupUI();
+  const lensCursor = new LensCursor();
+
+  // 13. Wire Chapter Navigation Dots
   document.querySelectorAll('.chapter-dot').forEach((dot) => {
     dot.addEventListener('click', () => {
       const idx = parseInt(dot.dataset.index, 10);
@@ -109,28 +128,50 @@ async function main() {
     });
   });
 
-  // 12. Pre-compile Shaders to eliminate scroll stutter (PRD Section 9)
-  updateLoaderProgress(95);
+  // 14. Pre-compile Shaders to eliminate scroll stutter (PRD Section 9)
+  updateLoaderProgress(95, 'Compiling WebGL pipelines...');
   renderer.compile(scene, camera);
-  updateLoaderProgress(100);
+  updateLoaderProgress(100, 'Igniting experience.');
 
   // Smoothly reveal showroom
   setTimeout(() => {
     if (loadingScreen) {
       loadingScreen.classList.add('loaded');
     }
-  }, 350);
+  }, 400);
 
-  // 13. Synchronize Resize Handlers
+  // 15. Synchronize Resize Handlers
   window.addEventListener('resize', () => {
     sceneResize();
     postResize(window.innerWidth, window.innerHeight);
   });
 
-  // 14. Render Loop with Tab Visibility Pause (PRD Section 9)
+  // 16. Render Loop with Tab Visibility & Offscreen Canvas Pause
   let isTabVisible = !document.hidden;
+  let isCanvasOnScreen = true;
+
   document.addEventListener('visibilitychange', () => {
     isTabVisible = !document.hidden;
+  });
+
+  if ('IntersectionObserver' in window) {
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        isCanvasOnScreen = entry.isIntersecting;
+      });
+    }, { threshold: 0.05 });
+    observer.observe(canvas);
+  }
+
+  // 17. Teardown & Clean Disposals
+  window.addEventListener('beforeunload', () => {
+    teardownScene({
+      scene,
+      renderer,
+      composer,
+      controls: timelineController.controls,
+      lenis: timelineController.lenis
+    });
   });
 
   const swayOffset = new THREE.Vector3();
@@ -146,12 +187,12 @@ async function main() {
 
   function renderLoop(now) {
     requestAnimationFrame(renderLoop);
-    if (!isTabVisible) return;
+    if (!isTabVisible || !isCanvasOnScreen) return;
 
     const dt = 0.016;
     elapsed += dt;
 
-    // Monitor FPS & adapt quality
+    // Monitor FPS & adapt quality tier
     monitorQuality(now);
 
     // Animate daytime running LED and taillight breathing pulse
@@ -162,19 +203,11 @@ async function main() {
       particleMaterial.uniforms.uTime.value = elapsed;
     }
 
-    // Inertial heavy hydraulic camera dampening — absorbs sudden scrolls & guarantees smooth motion
+    // Inertial heavy hydraulic camera dampening & camera rig updates
     timelineController.updateDampedCamera(dt);
 
-    if (!timelineController.controls || !timelineController.controls.enabled) {
-      // Subtle cinematic breathing camera sway (only when not user-dragging)
-      const swayX = Math.sin(elapsed * 0.5) * 0.008;
-      const swayY = Math.cos(elapsed * 0.35) * 0.004;
-      swayOffset.set(swayX, swayY, 0);
-
-      camera.position.add(swayOffset);
-      camera.lookAt(cameraTarget);
-      camera.position.sub(swayOffset);
-    }
+    // Update 3D Hotspot pins
+    hotspotManager.update(timelineController.masterProgress, camera);
 
     // Render post-processing chain
     composer.render();

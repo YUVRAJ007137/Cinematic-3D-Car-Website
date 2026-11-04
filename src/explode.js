@@ -130,10 +130,14 @@ export class ExplodeController {
       // Position uses smooth S-curve easeInOutCubic (accelerates and decelerates with zero jerk)
       const easedT = easeInOutCubic(localT);
 
-      // position = rest + (direction * distance + jitter) * ease(localProgress)
-      node.position.x = restPos.x + (dir.x * distance + jitter.x) * easedT;
-      node.position.y = restPos.y + (dir.y * distance + jitter.y) * easedT;
-      node.position.z = restPos.z + (dir.z * distance + jitter.z) * easedT;
+      // Reduce jitter on mobile / small screens to prevent crowded or vibrating parts
+      const isMobile = typeof window !== 'undefined' && window.innerWidth <= 768;
+      const jitterScale = isMobile ? 0.35 : 1.0;
+
+      // position = rest + (direction * distance + jitter * scale) * ease(localProgress)
+      node.position.x = restPos.x + (dir.x * distance + jitter.x * jitterScale) * easedT;
+      node.position.y = restPos.y + (dir.y * distance + jitter.y * jitterScale) * easedT;
+      node.position.z = restPos.z + (dir.z * distance + jitter.z * jitterScale) * easedT;
 
       // Micro-rotation uses easeInOutQuad for organic, gentle settling
       const rotEasedT = easeInOutQuad(localT);

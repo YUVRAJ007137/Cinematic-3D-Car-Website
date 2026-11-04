@@ -37,12 +37,13 @@ export function setupPostProcessing(renderer, scene, camera) {
   const renderPass = new RenderPass(scene, camera);
   composer.addPass(renderPass);
 
-  // 1. Bloom — tuned specifically for LED glows, crystal reflectors, and taillights
+  // 1. Bloom — half-resolution mipmap blur cuts GPU VRAM and fill-rate in half
   const bloomEffect = new BloomEffect({
     luminanceThreshold: 0.72,
     luminanceSmoothing: 0.3,
     intensity: isMobile ? 0.75 : 1.35,
-    mipmapBlur: true
+    mipmapBlur: true,
+    resolutionScale: 0.5
   });
 
   // 2. Depth of Field (DoF) — dynamic bokeh on close-up detail shots
@@ -107,12 +108,38 @@ export function setupPostProcessing(renderer, scene, camera) {
     depthOfFieldEffect.bokehScale = bokehAmount;
   }
 
-  // Adaptive Quality Monitor (PRD Section 9)
-  let qualityTier = 3;
+  function setBloomIntensity(val) {
+    if (bloomEffect) bloomEffect.intensity = val;
+  }
+
+  function setFilmGrain(opacity) {
+    if (noiseEffect && qualityTier > 1) {
+      noiseEffect.blendMode.opacity.value = opacity;
+    }
+  }
+
+  function setDoFOptics(focusDistance, aperture) {
+    if (!depthOfFieldEffect) return;
+    if (focusDistance !== undefined && focusDistance > 0) {
+      if (depthOfFieldEffect.circleOfConfusionMaterial && depthOfFieldEffect.circleOfConfusionMaterial.uniforms.focusDistance) {
+        depthOfFieldEffect.circleOfConfusionMaterial.uniforms.focusDistance.value = focusDistance;
+      }
+    }
+    if (aperture !== undefined) {
+      depthOfFieldEffect.bokehScale = aperture * 4.0;
+    }
+  }
+
+  // Adaptive Quality Monitor (PRD Section 9) — lower quality tier by default on phones
+  let qualityTier = isMobile ? 1 : 3;
   let frameCount = 0;
   let lastTime = performance.now();
   let startupGracePeriod = performance.now() + 3000; // Ignore first 3s while loading/compiling
   let fpsHistory = [];
+
+  if (isMobile) {
+    applyQualityTier(1);
+  }
 
   function monitorQuality(now) {
     if (now < startupGracePeriod) {
@@ -166,6 +193,9 @@ export function setupPostProcessing(renderer, scene, camera) {
     vignetteEffect,
     setSize,
     setDoFState,
+    setBloomIntensity,
+    setFilmGrain,
+    setDoFOptics,
     monitorQuality
   };
 }

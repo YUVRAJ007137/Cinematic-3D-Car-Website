@@ -1,0 +1,26 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Mesh Groups Manifest",
+  "description": "Maps each GLTF mesh and node name to its functional subsystem, confidence rating, and classification reason.",
+  "type": "object",
+  "additionalProperties": {
+    "type": "object",
+    "required": ["group"],
+    "properties": {
+      "group": {
+        "type": "string",
+        "enum": ["body_panels", "glass_and_lights", "interior", "mechanical", "brakes", "wheels", "misc", "unassigned"],
+        "description": "Functional subsystem group"
+      },
+      "confidence": {
+        "type": "string",
+        "enum": ["high", "medium", "low"],
+        "description": "Classification confidence"
+      },
+      "reason": {
+        "type": "string",
+        "description": "Human or heuristic classification reason"
+      }
+    }
+  }
+}

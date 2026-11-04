@@ -1,0 +1,86 @@
+[
+  {
+    "mesh": "headlight_L",
+    "title": "Adaptive LED Matrix",
+    "spec": "84 individually controlled LEDs with automatic high-beam assist",
+    "group": "lights"
+  },
+  {
+    "mesh": "headlight_R",
+    "title": "Adaptive LED Matrix",
+    "spec": "84 individually controlled LEDs with automatic high-beam assist",
+    "group": "lights"
+  },
+  {
+    "mesh": "taillight_L",
+    "title": "OLED Tail Lights",
+    "spec": "3D-printed OLED elements, dynamic turn signals",
+    "group": "lights"
+  },
+  {
+    "mesh": "engine_block",
+    "title": "Twin-Turbo V8",
+    "spec": "4.0L twin-turbocharged V8, 650 HP @ 6,500 RPM, 590 lb-ft torque",
+    "group": "engine"
+  },
+  {
+    "mesh": "turbo_L",
+    "title": "Turbocharger (Left)",
+    "spec": "Twin-scroll design, 22 PSI max boost, ball-bearing cartridge",
+    "group": "engine"
+  },
+  {
+    "mesh": "turbo_R",
+    "title": "Turbocharger (Right)",
+    "spec": "Twin-scroll design, 22 PSI max boost, ball-bearing cartridge",
+    "group": "engine"
+  },
+  {
+    "mesh": "intercooler",
+    "title": "Air-to-Water Intercooler",
+    "spec": "Front-mounted, 45% charge air temperature reduction",
+    "group": "engine"
+  },
+  {
+    "mesh": "brake_disc_FL",
+    "title": "Carbon-Ceramic Brakes",
+    "spec": "410mm front / 380mm rear carbon-ceramic discs, 6-piston calipers",
+    "group": "wheels"
+  },
+  {
+    "mesh": "steering_wheel",
+    "title": "Multifunction Steering",
+    "spec": "Alcantara-wrapped, paddle shifters, haptic feedback buttons",
+    "group": "interior"
+  },
+  {
+    "mesh": "dashboard",
+    "title": "Digital Cockpit",
+    "spec": "12.3\" driver display + 14.9\" OLED infotainment, AR head-up display",
+    "group": "interior"
+  },
+  {
+    "mesh": "seats_front",
+    "title": "Sport Seats",
+    "spec": "18-way power adjust, ventilated Nappa leather, memory for 3 profiles",
+    "group": "interior"
+  },
+  {
+    "mesh": "windshield",
+    "title": "Acoustic Laminated Glass",
+    "spec": "IR-reflective coating, integrated antenna, rain-sensing wipers",
+    "group": "glass"
+  },
+  {
+    "mesh": "exhaust_tips_L",
+    "title": "Performance Exhaust",
+    "spec": "Active valve exhaust with 3 modes: Comfort, Sport, Track",
+    "group": "exhaust"
+  },
+  {
+    "mesh": "radiator",
+    "title": "Active Aero Radiator",
+    "spec": "Electronically controlled shutters, 680mm core width",
+    "group": "engine"
+  }
+]

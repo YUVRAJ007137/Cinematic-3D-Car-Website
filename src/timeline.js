@@ -3,6 +3,9 @@ import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger.js';
 import Lenis from 'lenis';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
+import { audioManager } from './audio.js';
+import { computePchipTangents, evalHermiteSpline, getChapterFromProgress } from './math-utils.js';
+import { CameraRig } from './cameraRig.js';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -10,76 +13,16 @@ gsap.registerPlugin(ScrollTrigger);
  * Scroll Timeline Engine — Monotone Cubic Hermite Spline (PCHIP) & Studio Hydraulic Crane Damping
  *
  * Eliminates sudden camera movements, stops, and jerks:
- * 1. Fritsch-Carlson PCHIP Spline: Monotone cubic Hermite interpolation guarantees strictly monotonic
- *    curves between keyframes with ZERO overshoot, zero artificial oscillations, and zero direction whips.
+ * 1. CameraRig: Progress-driven position/look-at splines, independent channels, speed ramps, and debug view.
  * 2. Heavy Hydraulic Damping: Low-pass lerp filter simulates a 500lb Hollywood camera crane with fluid
  *    head damping, smoothing trackpad/mouse-wheel impulses into continuous, gliding cinematography.
- * 3. Luxurious Studio Easing: 2.0s Lenis duration paired with 1.8s scrub inertia.
+ * 3. Drag-to-Orbit during Exterior chapter (with limits) and full 360° orbit at CTA.
+ * 4. Lenis syncTouch mobile smooth scrolling.
+ * 5. Audio transition triggers and high-velocity motion blur / speed lines.
  */
 
-// Fritsch-Carlson Monotone Cubic Hermite (PCHIP) tangent calculation
-function computePchipTangents(xs, ys) {
-  const n = xs.length;
-  const m = new Array(n).fill(0);
-  if (n <= 1) return m;
-  if (n === 2) {
-    const slope = (ys[1] - ys[0]) / Math.max(xs[1] - xs[0], 0.0001);
-    m[0] = slope;
-    m[1] = slope;
-    return m;
-  }
-
-  // 1. Calculate secant slopes delta_k = (y_{k+1} - y_k) / (x_{k+1} - x_k)
-  const deltas = new Array(n - 1);
-  for (let k = 0; k < n - 1; k++) {
-    const dx = Math.max(xs[k + 1] - xs[k], 0.0001);
-    deltas[k] = (ys[k + 1] - ys[k]) / dx;
-  }
-
-  // 2. Initial slopes using weighted harmonic mean / standard PCHIP formula
-  m[0] = deltas[0];
-  m[n - 1] = deltas[n - 2];
-
-  for (let k = 1; k < n - 1; k++) {
-    const d0 = deltas[k - 1];
-    const d1 = deltas[k];
-    // If slope changes sign or either is zero, it is a local extremum -> slope must be 0 (no overshoot!)
-    if (d0 * d1 <= 0) {
-      m[k] = 0;
-    } else {
-      const h0 = xs[k] - xs[k - 1];
-      const h1 = xs[k + 1] - xs[k];
-      const w0 = 2 * h1 + h0;
-      const w1 = h1 + 2 * h0;
-      m[k] = (w0 + w1) / ((w0 / d0) + (w1 / d1));
-    }
-  }
-
-  // 3. Fritsch-Carlson 2-pass safeguard to strictly guarantee monotonicity
-  for (let k = 0; k < n - 1; k++) {
-    const d = deltas[k];
-    if (Math.abs(d) < 1e-7) {
-      m[k] = 0;
-      m[k + 1] = 0;
-    } else {
-      const a = m[k] / d;
-      const b = m[k + 1] / d;
-      if (a < 0) m[k] = 0;
-      if (b < 0) m[k + 1] = 0;
-      const normSq = a * a + b * b;
-      if (normSq > 9) {
-        const tau = 3 / Math.sqrt(normSq);
-        m[k] = tau * a * d;
-        m[k + 1] = tau * b * d;
-      }
-    }
-  }
-
-  return m;
-}
-
 export class TimelineController {
-  constructor({ camera, cameraTarget, lights, explodeController, overlayController, postController, carContainer, canvas }) {
+  constructor({ camera, cameraTarget, lights, explodeController, overlayController, postController, carContainer, canvas, scene }) {
     this.camera = camera;
     this.cameraTarget = cameraTarget;
     this.lights = lights;
@@ -88,65 +31,42 @@ export class TimelineController {
     this.post = postController;
     this.carContainer = carContainer;
     this.canvas = canvas;
+    this.scene = scene;
 
     this.masterProgress = 0;
     this.currentChapterIndex = 0;
     this.lenis = null;
     this.reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-    // Target vectors for inertial camera dampening
-    this.targetCamPos = new THREE.Vector3(3.6, 0.68, 3.8);
-    this.targetCamTarget = new THREE.Vector3(0.0, 0.32, 0.3);
-    this.targetFov = 32;
-    this.isInitialized = false;
+    // Camera Rig Engine
+    this.cameraRig = new CameraRig({
+      camera: this.camera,
+      scene: this.scene,
+      canvas: this.canvas
+    });
 
-    // Interactive 360° OrbitControls for Chapter 6 (CTA Section)
+    // Target vectors for inertial camera dampening
+    this.targetCamPos = new THREE.Vector3(0.0, 0.22, 5.8);
+    this.targetCamTarget = new THREE.Vector3(0.0, 0.42, 0.5);
+    this.targetFov = 28;
+    this.isInitialized = false;
+    this.lastChapterIndex = -1;
+    this.lastProgress = 0;
+    this.scrollVelocity = 0;
+
+    // Speed Lines Canvas
+    this.speedCanvas = document.getElementById('speed-lines-canvas');
+    if (this.speedCanvas) {
+      this.speedCtx = this.speedCanvas.getContext('2d');
+      this.resizeSpeedCanvas();
+      window.addEventListener('resize', () => this.resizeSpeedCanvas());
+    }
+
+    // Interactive OrbitControls for Exterior Chapter & CTA
     this.initOrbitControls();
 
-    // Stabilized Cinematic Camera Keyframes — Harmonious Single-Arc Orbit
-    this.cameraKeyframes = [
-      // Chapter 1: Hero Reveal (0.00 - 0.10) — dramatic low 3/4 front angle
-      { p: 0.00, pos: [3.6, 0.68, 3.8],  target: [0.0, 0.32, 0.3], fov: 32 },
-      { p: 0.05, pos: [3.4, 0.88, 3.5],  target: [0.0, 0.38, 0.2], fov: 33 },
-      { p: 0.10, pos: [3.3, 1.10, 3.3],  target: [0.0, 0.42, 0.1], fov: 34 },
-
-      // Chapter 2: Exterior Orbit (0.10 - 0.28) — graceful tracking arc along side
-      { p: 0.18, pos: [3.8, 1.15, 2.6],  target: [0.0, 0.44, 0.1], fov: 35 },
-      { p: 0.28, pos: [3.8, 1.35, 1.9],  target: [0.0, 0.48, 0.1], fov: 35 },
-
-      // Chapter 3: Exploded View (0.28 - 0.68) — stable elevated crane overlooking explosion
-      // 3.1: Body Panels (0.28 - 0.35)
-      { p: 0.35, pos: [3.6, 1.95, 2.3],  target: [0.10, 0.60, 0.2], fov: 35 },
-      // 3.2: Optical & Glass (0.35 - 0.42)
-      { p: 0.42, pos: [3.3, 1.85, 2.0],  target: [0.15, 0.58, 0.3], fov: 34 },
-      // 3.3: Handcrafted Cockpit (0.42 - 0.49)
-      { p: 0.49, pos: [2.9, 1.80, 1.4],  target: [0.10, 0.55, 0.1], fov: 34 },
-      // 3.4: W16 Engine & Chassis (0.49 - 0.56)
-      { p: 0.56, pos: [2.8, 1.65, 0.9],  target: [0.10, 0.50, 0.0], fov: 34 },
-      // 3.5: Carbon-Ceramic Brakes (0.56 - 0.62)
-      { p: 0.62, pos: [2.7, 1.25, 1.3],  target: [0.35, 0.42, 0.6], fov: 33 },
-      // 3.6: Magnesium Aero Wheels (0.62 - 0.68)
-      { p: 0.68, pos: [2.9, 1.15, 1.6],  target: [0.40, 0.42, 0.6], fov: 33 },
-
-      // Chapter 4: Reassembly & Form Settle (0.68 - 0.78) — majestic cinematic pullback
-      { p: 0.73, pos: [3.5, 1.25, 2.3],  target: [0.10, 0.44, 0.2], fov: 35 },
-      { p: 0.78, pos: [3.8, 1.20, 2.8],  target: [0.00, 0.42, 0.1], fov: 35 },
-
-      // Chapter 5: Cinematic Detail Precision (0.78 - 0.92) — macro photography with creamy bokeh
-      // 5.1: Quad-LED Matrix Projector (0.78 - 0.83)
-      { p: 0.83, pos: [2.0, 0.80, 2.4],  target: [0.48, 0.50, 1.55], fov: 26 },
-      // 5.2: Forged Magnesium Wheel & Brembo Caliper (0.83 - 0.88)
-      { p: 0.88, pos: [2.3, 0.58, 1.3],  target: [0.72, 0.36, 1.05], fov: 26 },
-      // 5.3: Rear Haunch & Continuous LED Blade (0.88 - 0.92)
-      { p: 0.92, pos: [2.7, 0.95, -0.2], target: [0.30, 0.58, -0.90], fov: 28 },
-
-      // Chapter 6: Showroom Configurator & Free 360° Orbit (0.92 - 1.00)
-      { p: 0.96, pos: [3.4, 1.15, 2.6],  target: [0.00, 0.40, 0.1], fov: 34 },
-      { p: 1.00, pos: [3.5, 1.12, 3.0],  target: [0.00, 0.40, 0.1], fov: 34 }
-    ];
-
-    // Pre-calculate Monotone Cubic Hermite (PCHIP) tangents
-    this.initCameraSpline();
+    // Fallback keyframes reference
+    this.cameraKeyframes = this.cameraRig.keyframes;
 
     this.initLenis();
     this.initScrollTrigger();
@@ -155,6 +75,7 @@ export class TimelineController {
     window.__timeline = this;
     window.__camera = this.camera;
     window.__cameraTarget = this.cameraTarget;
+    window.__scene = this.scene;
   }
 
   /**
@@ -194,12 +115,55 @@ export class TimelineController {
     });
   }
 
+  resizeSpeedCanvas() {
+    if (!this.speedCanvas) return;
+    this.speedCanvas.width = window.innerWidth;
+    this.speedCanvas.height = window.innerHeight;
+  }
+
+  renderSpeedLines(vel) {
+    if (!this.speedCanvas || !this.speedCtx) return;
+    const ctx = this.speedCtx;
+    const w = this.speedCanvas.width;
+    const h = this.speedCanvas.height;
+
+    ctx.clearRect(0, 0, w, h);
+    if (vel < 0.008) return;
+
+    const alpha = Math.min(0.45, (vel - 0.008) * 25);
+    ctx.strokeStyle = `rgba(255, 255, 255, ${alpha.toFixed(3)})`;
+    ctx.lineWidth = 1.2;
+
+    const cx = w * 0.5;
+    const cy = h * 0.5;
+    const count = 18;
+
+    for (let i = 0; i < count; i++) {
+      const angle = (i / count) * Math.PI * 2 + (Math.random() * 0.1 - 0.05);
+      const innerR = Math.min(w, h) * 0.28 + Math.random() * 40;
+      const length = 40 + vel * 600;
+
+      const x1 = cx + Math.cos(angle) * innerR;
+      const y1 = cy + Math.sin(angle) * innerR;
+      const x2 = cx + Math.cos(angle) * (innerR + length);
+      const y2 = cy + Math.sin(angle) * (innerR + length);
+
+      ctx.beginPath();
+      ctx.moveTo(x1, y1);
+      ctx.lineTo(x2, y2);
+      ctx.stroke();
+    }
+  }
+
   initLenis() {
+    const isMobile = window.innerWidth <= 768;
     this.lenis = new Lenis({
-      duration: 2.0, // Slowed down for luxurious, velvet motion
+      duration: isMobile ? 1.4 : 2.0, // Responsive luxury motion
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
       smoothWheel: true,
-      smoothTouch: false
+      smoothTouch: true,
+      syncTouch: true,
+      touchMultiplier: 1.4
     });
 
     this.lenis.on('scroll', ScrollTrigger.update);
@@ -270,32 +234,67 @@ export class TimelineController {
    * Sets master progress [0, 1] and updates target spline trajectory
    */
   setProgress(progress, immediate = false) {
+    const delta = Math.abs(progress - this.lastProgress);
+    this.scrollVelocity = delta;
+    this.lastProgress = progress;
+
     this.masterProgress = Math.max(0, Math.min(1, progress));
 
+    // Audio whoosh on chapter changes
+    const chapterObj = getChapterFromProgress(this.masterProgress);
+    if (this.lastChapterIndex !== -1 && this.lastChapterIndex !== chapterObj.index) {
+      audioManager.playWhoosh(0.35);
+    }
+    this.lastChapterIndex = chapterObj.index;
+
+    // Orbit controls logic:
+    // Exterior chapter (0.10 - 0.28) allows restricted orbit
+    // CTA (>= 0.94) allows full 360° orbit
+    const inExterior = this.masterProgress >= 0.10 && this.masterProgress <= 0.28;
     const isAtCTA = this.masterProgress >= 0.94;
+    const canOrbit = inExterior || isAtCTA;
+
     if (this.controls) {
-      if (isAtCTA && !this.controls.enabled) {
-        this.controls.target.copy(this.cameraTarget);
-        this.controls.enabled = true;
-      } else if (!isAtCTA && this.controls.enabled) {
-        this.controls.enabled = false;
+      if (canOrbit) {
+        if (!this.controls.enabled) {
+          this.controls.target.copy(this.cameraTarget);
+          this.controls.enabled = true;
+        }
+        if (inExterior) {
+          this.controls.minAzimuthAngle = -Math.PI / 4;
+          this.controls.maxAzimuthAngle = Math.PI / 4;
+          this.controls.minPolarAngle = Math.PI / 4;
+          this.controls.maxPolarAngle = Math.PI / 2 - 0.05;
+        } else {
+          this.controls.minAzimuthAngle = -Infinity;
+          this.controls.maxAzimuthAngle = Infinity;
+          this.controls.minPolarAngle = 0.2;
+          this.controls.maxPolarAngle = Math.PI / 2 - 0.04;
+        }
+      } else {
+        if (this.controls.enabled) {
+          this.controls.enabled = false;
+          this.isUserOrbiting = false;
+        }
       }
     }
 
-    // Evaluate PCHIP continuous spline for smooth target coordinates
-    if (!isAtCTA || (this.controls && !this.controls.state)) {
-      const state = this.evalSpline(this.masterProgress);
-      this.targetCamPos.set(state.pos[0], state.pos[1], state.pos[2]);
-      this.targetCamTarget.set(state.target[0], state.target[1], state.target[2]);
-      this.targetFov = state.fov;
+    // Evaluate continuous spline via CameraRig for smooth target coordinates
+    if (!canOrbit || !this.isUserOrbiting) {
+      if (this.cameraRig) {
+        const state = this.cameraRig.evalChannels(this.masterProgress);
+        this.targetCamPos.copy(state.pos);
+        this.targetCamTarget.copy(state.target);
+        this.targetFov = state.fov;
 
-      if (immediate || !this.isInitialized) {
-        this.camera.position.copy(this.targetCamPos);
-        this.cameraTarget.copy(this.targetCamTarget);
-        this.camera.fov = this.targetFov;
-        this.camera.updateProjectionMatrix();
-        this.camera.lookAt(this.cameraTarget);
-        this.isInitialized = true;
+        if (immediate || !this.isInitialized) {
+          this.camera.position.copy(this.targetCamPos);
+          this.cameraTarget.copy(this.targetCamTarget);
+          this.camera.fov = this.targetFov;
+          this.camera.updateProjectionMatrix();
+          this.camera.lookAt(this.cameraTarget);
+          this.isInitialized = true;
+        }
       }
     }
 
@@ -313,36 +312,67 @@ export class TimelineController {
    * Glides the camera toward target coordinates, completely eliminating sudden jerks or stops
    */
   updateDampedCamera(dt = 0.016) {
-    if (this.controls && this.controls.enabled) {
+    if (this.scrollVelocity > 0.001) {
+      this.renderSpeedLines(this.scrollVelocity);
+      this.scrollVelocity *= 0.88;
+    } else if (this.speedCtx && this.speedCanvas) {
+      this.speedCtx.clearRect(0, 0, this.speedCanvas.width, this.speedCanvas.height);
+    }
+
+    if (this.controls && this.controls.enabled && this.isUserOrbiting) {
       this.controls.update();
       return;
     }
 
-    // Damping factor ~0.050 per 60fps frame — creates heavy Hollywood camera crane weight
-    const lerpFactor = Math.min(1.0, 0.050 * (dt / 0.016));
-    this.camera.position.lerp(this.targetCamPos, lerpFactor);
-    this.cameraTarget.lerp(this.targetCamTarget, lerpFactor);
-    this.camera.fov = THREE.MathUtils.lerp(this.camera.fov, this.targetFov, lerpFactor);
-    this.camera.updateProjectionMatrix();
-    this.camera.lookAt(this.cameraTarget);
+    // Drive camera through CameraRig
+    if (this.cameraRig) {
+      const state = this.cameraRig.update(this.masterProgress, dt, this.scrollVelocity);
+      this.cameraTarget.copy(state.target);
+
+      // Pass focus and aperture to post processing DoF if active
+      if (this.post) {
+        if (state.aperture > 0.05) {
+          this.post.setDoFState(state.target, state.aperture);
+        }
+        if (this.post.chromaticAberrationEffect) {
+          const streakIntensity = 0.0007 + Math.min(0.003, state.velocity * 0.12);
+          this.post.chromaticAberrationEffect.offset.set(streakIntensity, streakIntensity * 0.5);
+        }
+      }
+
+      // Modulate audio engine idle & silence at dolly zoom
+      audioManager.updateEnginePitch(this.masterProgress, this.scrollVelocity);
+    }
   }
 
   updateChapterDynamics(p) {
-    const { heroSweepLight, keyLight, rimLightLeft, underGlow, leftHeadlightBeam, rightHeadlightBeam } = this.lights;
+    const { heroSweepLight, stripLight, keyLight, rimLightLeft, rimLightRight, underGlow, leftHeadlightBeam, rightHeadlightBeam } = this.lights;
 
-    // Chapter 1: Hero Reveal (0 - 0.10)
-    if (p <= 0.10) {
-      const heroT = p / 0.10;
+    // CHAPTER 01: THE REVEAL (0.00 - 0.12) — "Darkness, then speed"
+    // Lighting: pure black; a single strip light sweeps left to right revealing silhouette in pieces
+    if (p <= 0.12) {
+      const heroT = p / 0.12;
 
-      heroSweepLight.intensity = Math.sin(heroT * Math.PI) * 16.0;
-      heroSweepLight.position.x = -5.0 + heroT * 10.0;
-      heroSweepLight.position.z = 4.0 - heroT * 2.0;
+      // Pure black scene
+      if (this.lights.hemiLight) this.lights.hemiLight.intensity = 0.02;
+      keyLight.intensity = 0.05 * heroT;
+      rimLightLeft.intensity = 0.0;
+      if (rimLightRight) rimLightRight.intensity = 0.0;
+      if (underGlow) underGlow.intensity = 0.0;
 
-      keyLight.intensity = 0.2 + heroT * 1.8;
-      rimLightLeft.intensity = heroT * 1.6;
-      if (underGlow) underGlow.intensity = heroT * 1.2;
+      // Precision strip light sweep from X: -6.0 to +6.0
+      const stripX = -6.0 + heroT * 12.0;
+      if (stripLight) {
+        stripLight.position.set(stripX, 2.2, 3.2);
+        stripLight.target.position.set(stripX * 0.85, 0.45, 0.0);
+        stripLight.intensity = Math.sin(heroT * Math.PI) * 26.0;
+      }
+      if (heroSweepLight) {
+        heroSweepLight.intensity = 0.0;
+      }
 
-      const beamP = Math.max(0, (heroT - 0.4) / 0.6);
+      // Headlight beams ignite toward the end of reveal
+      const beamP = Math.max(0, (heroT - 0.55) / 0.45);
       if (leftHeadlightBeam && rightHeadlightBeam) {
         const beamIntensity = beamP * 12.0;
         leftHeadlightBeam.intensity = beamIntensity;
@@ -350,79 +380,144 @@ export class TimelineController {
       }
 
       if (this.carContainer) {
-        const settleSpring = Math.sin(heroT * Math.PI) * 0.03;
+        const settleSpring = Math.sin(heroT * Math.PI) * 0.02;
         this.carContainer.position.y = -settleSpring;
       }
 
       this.explode.update(0);
       this.explode.setFocusGroup(null);
-      if (this.post) this.post.setDoFState(null, 0.0);
+      if (this.post) {
+        this.post.setDoFState(null, 0.0);
+        this.post.setBloomIntensity(1.35);
+      }
     }
-    // Chapter 2: Exterior Orbit (0.10 - 0.28)
-    else if (p > 0.10 && p <= 0.28) {
-      heroSweepLight.intensity = 0.0;
+    // CHAPTER 02: THE ORBIT (0.12 - 0.30) — "Walk the room"
+    // Lighting: studio rim & rack focus
+    else if (p > 0.12 && p <= 0.30) {
+      if (stripLight) stripLight.intensity = 0.0;
+      if (this.lights.hemiLight) this.lights.hemiLight.intensity = 0.45;
       keyLight.intensity = 2.2;
-      rimLightLeft.intensity = 1.8;
-      if (underGlow) underGlow.intensity = 1.2;
+      rimLightLeft.intensity = 1.9;
+      if (rimLightRight) rimLightRight.intensity = 1.6;
+      if (underGlow) underGlow.intensity = 1.1;
+
+      if (leftHeadlightBeam && rightHeadlightBeam) {
+        leftHeadlightBeam.intensity = 12.0;
+        rightHeadlightBeam.intensity = 12.0;
+      }
+      if (this.carContainer) this.carContainer.position.y = 0;
+
+      this.explode.update(0);
+      this.explode.setFocusGroup(null);
+      if (this.post) {
+        this.post.setBloomIntensity(1.35);
+      }
+    }
+    // CHAPTER 03: THE DOLLY ZOOM (0.30 - 0.36) — "The moment you realize"
+    // Hitchcock dolly zoom used once. Dark screen, cut audio and bloom briefly for emphasis.
+    else if (p > 0.30 && p <= 0.36) {
+      if (stripLight) stripLight.intensity = 0.0;
+      if (this.lights.hemiLight) this.lights.hemiLight.intensity = 0.05;
+      keyLight.intensity = 0.35;
+      rimLightLeft.intensity = 0.25;
+      if (rimLightRight) rimLightRight.intensity = 0.15;
+      if (underGlow) underGlow.intensity = 0.0;
+
+      if (leftHeadlightBeam && rightHeadlightBeam) {
+        leftHeadlightBeam.intensity = 1.5;
+        rightHeadlightBeam.intensity = 1.5;
+      }
+
+      this.explode.update(0);
+      this.explode.setFocusGroup(null);
+      if (this.post) {
+        this.post.setBloomIntensity(0.0); // Cut bloom for emphasis
+        this.post.setDoFState(null, 0.0);
+      }
+    }
+    // CHAPTER 04: THE TEARDOWN (0.36 - 0.75) — "Layer by layer"
+    // Vertical crane rising as each layer lifts away. Inactive layers fade to 12%.
+    else if (p > 0.36 && p <= 0.75) {
+      if (stripLight) stripLight.intensity = 0.0;
+      if (this.lights.hemiLight) this.lights.hemiLight.intensity = 0.40;
+      keyLight.intensity = 2.2;
+      rimLightLeft.intensity = 2.0;
+      if (rimLightRight) rimLightRight.intensity = 1.5;
+      if (underGlow) underGlow.intensity = 0.9;
+
+      if (leftHeadlightBeam && rightHeadlightBeam) {
+        leftHeadlightBeam.intensity = 6.0;
+        rightHeadlightBeam.intensity = 6.0;
+      }
+
+      if (this.post) {
+        this.post.setBloomIntensity(1.2);
+        this.post.setDoFState(null, 0.0);
+      }
+
+      // Explosion factor curve: 0.36 -> 0.70 expands to 1.0; 0.70 -> 0.75 settles back to 0.0
+      let explodeFactor = 0;
+      if (p <= 0.70) {
+        explodeFactor = Math.max(0, Math.min(1.0, (p - 0.36) / (0.68 - 0.36)));
+      } else {
+        explodeFactor = Math.max(0, 1.0 - (p - 0.70) / (0.75 - 0.70));
+      }
+      this.explode.update(explodeFactor);
+
+      // Determine active subsystem layer
+      const layerProgress = (p - 0.36) / (0.70 - 0.36);
+      let activeGroup = null;
+      if (layerProgress < 0.18) activeGroup = 'body_panels';
+      else if (layerProgress < 0.35) activeGroup = 'glass_and_lights';
+      else if (layerProgress < 0.52) activeGroup = 'interior';
+      else if (layerProgress < 0.70) activeGroup = 'mechanical';
+      else if (layerProgress < 0.85) activeGroup = 'brakes';
+      else activeGroup = 'wheels';
+
+      this.explode.setFocusGroup(activeGroup);
+    }
+    // CHAPTER 05: THE MACRO (0.75 - 0.90) — "Details nobody asked for"
+    // Probe-lens crawl millimetres above surface. Clearcoat streaks, bloom only on emissives.
+    else if (p > 0.75 && p <= 0.90) {
+      if (stripLight) stripLight.intensity = 0.0;
+      if (this.lights.hemiLight) this.lights.hemiLight.intensity = 0.35;
+      keyLight.intensity = 2.6;
+      rimLightLeft.intensity = 2.8;
+      if (rimLightRight) rimLightRight.intensity = 1.8;
+      if (underGlow) underGlow.intensity = 0.8;
+
+      if (leftHeadlightBeam && rightHeadlightBeam) {
+        leftHeadlightBeam.intensity = 14.0;
+        rightHeadlightBeam.intensity = 14.0;
+      }
+
+      this.explode.update(0);
+      this.explode.setFocusGroup(null);
+
+      if (this.post) {
+        this.post.setBloomIntensity(1.6); // Sharp emissive bloom
+      }
+    }
+    // CHAPTER 06: THE FINALE (0.90 - 1.00) — "Make it yours"
+    // Slow turntable, car centered, customizer ready.
+    else {
+      if (this.lights.hemiLight) this.lights.hemiLight.intensity = 0.45;
+      keyLight.intensity = 2.2;
+      rimLightLeft.intensity = 2.0;
+      if (rimLightRight) rimLightRight.intensity = 1.6;
+      if (underGlow) underGlow.intensity = 1.0;
 
       if (leftHeadlightBeam && rightHeadlightBeam) {
         leftHeadlightBeam.intensity = 12.0;
         rightHeadlightBeam.intensity = 12.0;
       }
 
-      if (this.carContainer) this.carContainer.position.y = 0;
-
       this.explode.update(0);
       this.explode.setFocusGroup(null);
-      if (this.post) this.post.setDoFState(null, 0.0);
-    }
-    // Chapter 3: Exploded View (0.28 - 0.68)
-    else if (p > 0.28 && p <= 0.68) {
-      heroSweepLight.intensity = 0.0;
-      keyLight.intensity = 2.0;
-
-      const explodeT = (p - 0.28) / (0.68 - 0.28);
-      this.explode.update(explodeT);
-
-      let activeGroup = null;
-      if (explodeT < 0.18) activeGroup = 'body_panels';
-      else if (explodeT < 0.35) activeGroup = 'glass_and_lights';
-      else if (explodeT < 0.52) activeGroup = 'interior';
-      else if (explodeT < 0.70) activeGroup = 'mechanical';
-      else if (explodeT < 0.85) activeGroup = 'brakes';
-      else activeGroup = 'wheels';
-
-      this.explode.setFocusGroup(activeGroup);
-      if (this.post) this.post.setDoFState(null, 0.0);
-    }
-    // Chapter 4: Reassembly & Form Settle (0.68 - 0.78)
-    else if (p > 0.68 && p <= 0.78) {
-      const reassembleT = Math.max(0, 1.0 - (p - 0.68) / (0.75 - 0.68));
-      this.explode.update(reassembleT);
-      this.explode.setFocusGroup(null);
-      if (this.post) this.post.setDoFState(null, 0.0);
-    }
-    // Chapter 5: Detail Shots (0.78 - 0.92)
-    else if (p > 0.78 && p <= 0.92) {
-      this.explode.update(0);
-      this.explode.setFocusGroup(null);
-
-      keyLight.intensity = 2.4;
-      rimLightLeft.intensity = 2.6;
-
-      const detT = (p - 0.78) / (0.92 - 0.78);
-      const bokehIntensity = Math.sin(detT * Math.PI) * 4.5;
       if (this.post) {
-        this.post.setDoFState(this.cameraTarget, bokehIntensity);
+        this.post.setBloomIntensity(1.35);
+        this.post.setDoFState(null, 0.0);
       }
-    }
-    // Chapter 6: CTA & Final Pose (0.92 - 1.00)
-    else {
-      this.explode.update(0);
-      this.explode.setFocusGroup(null);
-      keyLight.intensity = 2.0;
-      rimLightLeft.intensity = 2.2;
-      if (this.post) this.post.setDoFState(null, 0.0);
     }
   }
 
@@ -436,13 +531,30 @@ export class TimelineController {
         window.scrollTo(0, targetScroll);
       }
       this.setProgress(p, true);
+      if (this.cameraRig) {
+        this.cameraRig.update(p, 0.016, 0);
+      }
       console.log(`[TestingHook] Master progress scrubbed to ${p.toFixed(3)}`);
     };
   }
 
+  cut(chapterIndex) {
+    if (this.cameraRig) {
+      this.cameraRig.cut(chapterIndex, () => {
+        const offsets = this.cameraRig.chapterOffsets || [0.0, 0.12, 0.30, 0.36, 0.75, 0.90];
+        const targetP = offsets[chapterIndex] ?? 0.0;
+        this.setProgress(targetP, true);
+      });
+    }
+  }
+
   scrollToChapter(index) {
-    const chapterOffsets = [0.0, 0.18, 0.45, 0.75, 0.86, 0.98];
+    const chapterOffsets = this.cameraRig ? this.cameraRig.chapterOffsets : [0.0, 0.12, 0.30, 0.36, 0.75, 0.90];
     const targetP = chapterOffsets[index] ?? 0;
-    window.__setProgress(targetP);
+    this.cut(index);
+    if (this.lenis) {
+      const scrollHeight = document.documentElement.scrollHeight - window.innerHeight;
+      this.lenis.scrollTo(targetP * scrollHeight, { immediate: false, duration: 0.5 });
+    }
   }
 }

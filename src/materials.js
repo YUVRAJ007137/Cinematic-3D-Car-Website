@@ -18,10 +18,16 @@ const upgradedMaterials = new Map();
 const paintMaterialsList = [];
 const emissiveMaterialsList = [];
 const carbonMaterialsList = [];
+const wheelMaterialsList = [];
+const caliperMaterialsList = [];
+const interiorMaterialsList = [];
 let modelRootRef = null;
 let isXRayActive = false;
-let currentFinishKey = 'gloss';
+let currentFinishKey = CONFIG.DEFAULT_FINISH_KEY || 'gloss';
 let currentColorKey = CONFIG.DEFAULT_COLOR_KEY || 'deep_rosso';
+let currentWheelKey = CONFIG.DEFAULT_WHEEL_KEY || 'magnesium';
+let currentCaliperKey = CONFIG.DEFAULT_CALIPER_KEY || 'racing_red';
+let currentInteriorKey = CONFIG.DEFAULT_INTERIOR_KEY || 'pur_sport_alcantara';
 
 export function setupMaterials(modelRoot, groupsData) {
   modelRootRef = modelRoot;
@@ -226,12 +232,16 @@ export function setupMaterials(modelRoot, groupsData) {
       } else if (name.includes('disc') || name.includes('rotor') || matName.includes('disc') || matName.includes('brake')) {
         child.material = brakeDiscMaterial.clone();
       } else {
-        child.material = magnesiumRimMaterial.clone();
+        const rimMat = magnesiumRimMaterial.clone();
+        child.material = rimMat;
+        wheelMaterialsList.push(rimMat);
       }
     }
     // 3. Brake Calipers
     else if (name.startsWith('Caliper') || cleanName.startsWith('Caliper') || cleanParent.startsWith('Caliper')) {
-      child.material = caliperMaterial.clone();
+      const calMat = caliperMaterial.clone();
+      child.material = calMat;
+      caliperMaterialsList.push(calMat);
     }
     // 4. Glass & Windshield — RenderOrder 10 guarantees proper sorting over solid cockpit!
     else if (
@@ -286,7 +296,9 @@ export function setupMaterials(modelRoot, groupsData) {
       name.startsWith('STITCH') || name.startsWith('SEAT') ||
       matName.includes('leather') || matName.includes('rubber')
     ) {
-      child.material = interiorAlcantaraMaterial.clone();
+      const intMat = interiorAlcantaraMaterial.clone();
+      child.material = intMat;
+      interiorMaterialsList.push(intMat);
     }
     // 9. Mechanical Frame, Suspension & Radiator
     else if (
@@ -372,6 +384,113 @@ export function setPaintFinish(finishKey) {
     }
     mat.needsUpdate = true;
   });
+  saveCustomizerState();
+}
+
+/**
+ * Updates wheel rim finish (Forged Magnesium, Stealth Noir, Hyper Silver, Tuscan Bronze)
+ */
+export function setWheelFinish(wheelKey) {
+  currentWheelKey = wheelKey;
+  const preset = CONFIG.WHEEL_PRESETS[wheelKey] || CONFIG.WHEEL_PRESETS.magnesium;
+  wheelMaterialsList.forEach((mat) => {
+    mat.color.set(preset.hex);
+    mat.metalness = preset.metalness;
+    mat.roughness = preset.roughness;
+    mat.needsUpdate = true;
+  });
+  saveCustomizerState();
+}
+
+/**
+ * Updates brake caliper color
+ */
+export function setCaliperColor(caliperKey) {
+  currentCaliperKey = caliperKey;
+  const preset = CONFIG.CALIPER_PRESETS[caliperKey] || CONFIG.CALIPER_PRESETS.racing_red;
+  caliperMaterialsList.forEach((mat) => {
+    mat.color.set(preset.hex);
+    mat.metalness = preset.metalness;
+    mat.roughness = preset.roughness;
+    mat.needsUpdate = true;
+  });
+  saveCustomizerState();
+}
+
+/**
+ * Updates interior upholstery (Alcantara, Beluga Noir, Cognac Tan)
+ */
+export function setInteriorOption(interiorKey) {
+  currentInteriorKey = interiorKey;
+  const preset = CONFIG.INTERIOR_PRESETS[interiorKey] || CONFIG.INTERIOR_PRESETS.pur_sport_alcantara;
+  interiorMaterialsList.forEach((mat) => {
+    mat.color.set(preset.hex);
+    mat.roughness = preset.roughness;
+    mat.metalness = preset.metalness;
+    mat.needsUpdate = true;
+  });
+  saveCustomizerState();
+}
+
+/**
+ * Returns current customizer selections for URL and sharing
+ */
+export function getCustomizerState() {
+  return {
+    paint: currentColorKey,
+    finish: currentFinishKey,
+    wheels: currentWheelKey,
+    calipers: currentCaliperKey,
+    interior: currentInteriorKey
+  };
+}
+
+/**
+ * Applies a full configuration state
+ */
+export function applyCustomizerState(state) {
+  if (!state) return;
+  if (state.paint) setPaintColor(state.paint);
+  if (state.finish) setPaintFinish(state.finish);
+  if (state.wheels) setWheelFinish(state.wheels);
+  if (state.calipers) setCaliperColor(state.calipers);
+  if (state.interior) setInteriorOption(state.interior);
+}
+
+/**
+ * Persists current customizer choices to URL hash & localStorage
+ */
+export function saveCustomizerState() {
+  const state = getCustomizerState();
+  const hash = `#paint=${state.paint}&finish=${state.finish}&wheels=${state.wheels}&calipers=${state.calipers}&interior=${state.interior}`;
+  try {
+    localStorage.setItem('customizer_config', JSON.stringify(state));
+    if (window.history && window.history.replaceState) {
+      window.history.replaceState(null, '', hash);
+    }
+  } catch (e) {}
+}
+
+/**
+ * Loads saved customizer choices from URL hash or localStorage
+ */
+export function loadSavedCustomizerState() {
+  const hash = window.location.hash;
+  if (hash && hash.includes('paint=')) {
+    const params = new URLSearchParams(hash.replace(/^#/, ''));
+    return {
+      paint: params.get('paint') || CONFIG.DEFAULT_COLOR_KEY,
+      finish: params.get('finish') || CONFIG.DEFAULT_FINISH_KEY,
+      wheels: params.get('wheels') || CONFIG.DEFAULT_WHEEL_KEY,
+      calipers: params.get('calipers') || CONFIG.DEFAULT_CALIPER_KEY,
+      interior: params.get('interior') || CONFIG.DEFAULT_INTERIOR_KEY
+    };
+  }
+  try {
+    const saved = localStorage.getItem('customizer_config');
+    if (saved) return JSON.parse(saved);
+  } catch (e) {}
+  return null;
 }
 
 /**
